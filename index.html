@@ -171,12 +171,14 @@ const PUBLICO = true;
     "gerado_em": "2026-07-03",
     "ano_referencia": 2026,
     "observacoes_gerais": [
-      "Metas: nao existe meta numerica individual por closer no Drive. So ha faixas coletivas (Bronze/Prata/Ouro/Master) que mudam de contagem de contratos (ate fev/2026, Bronze=12) para valor em R$ (a partir de mar/2026). Por isso meta=0 e atingimento=0 para todos.",
-      "Datas de nascimento: nenhum contrato traz nascimento (identificam por CPF/OAB). Campo data_nascimento vazio para todos - preencher manualmente na tela de Aniversarios.",
+      "Metas por faixa por closer (planilhas de Controle de Fechamento): Felipe/Lindsey por nº de contratos pagos (Bronze12/Prata17/Ouro25/Master35); Julia por valor R$ (Bronze20k/Prata50k/Ouro80k/Master150k, valor nao rastreado no KPI); Pamela sem meta.",
+      "Datas de nascimento (dia/mes) do Calendario 2026 (pasta Documentos Internos), sem ano. Faltam Bruna Cardoso e Daielly (nao constam no calendario).",
       "Produtividade operacional: workbook 'Produtividade Astrea - 2026' so possui abas de Maio e Junho/2026.",
       "Admissao: extraida do contrato mais recente. Felipe (04/06/2026) e Ana Giulia (01/04/2026) tem data de CONTRATO/formalizacao recente, embora atuem ha mais tempo - ver campo notas na ficha.",
-      "Camada restrita (remuneracao + sancoes) protegida por senha simples no cliente. Senha padrao: rh2026 (troque no topo do arquivo dashboard.html)."
+      "Camada restrita (remuneracao + sancoes) protegida por senha simples no cliente. Senha padrao: rh2026 (troque no topo do arquivo dashboard.html).",
+      "Karla incluida no roster em 03/07/2026 a pedido da gestao (advogada operacional). NF de junho da Julia adicionada ao Drive em 03/07 e marcada como entregue."
     ],
+    "atualizado_em": "2026-07-09",
     "publico": true
   },
   "colaboradores": [
@@ -188,7 +190,7 @@ const PUBLICO = true;
       "cargo": "Gerente Administrativa",
       "tipo_vinculo": "PJ",
       "oab": "",
-      "data_nascimento": "",
+      "data_nascimento": "0000-03-19",
       "data_admissao": "2026-04-01",
       "fim_experiencia": "2026-06-30",
       "contrato_vigencia": "Indeterminado (inicio 01/04/2026)",
@@ -203,7 +205,7 @@ const PUBLICO = true;
       "cargo": "Advogada",
       "tipo_vinculo": "PJ",
       "oab": "471.293 (OAB/SP)",
-      "data_nascimento": "",
+      "data_nascimento": "0000-04-21",
       "data_admissao": "2024-06-06",
       "fim_experiencia": "2024-09-04",
       "contrato_vigencia": "Indeterminado; ultimo aditivo 05/03/2026",
@@ -218,7 +220,7 @@ const PUBLICO = true;
       "cargo": "Closer",
       "tipo_vinculo": "PJ",
       "oab": "26.824 (OAB/PI)",
-      "data_nascimento": "",
+      "data_nascimento": "0000-06-17",
       "data_admissao": "2026-06-04",
       "fim_experiencia": "2026-09-02",
       "contrato_vigencia": "Indeterminado (contrato firmado 04/06/2026)",
@@ -233,7 +235,7 @@ const PUBLICO = true;
       "cargo": "Closer",
       "tipo_vinculo": "PJ",
       "oab": "",
-      "data_nascimento": "",
+      "data_nascimento": "0000-10-22",
       "data_admissao": "2025-03-14",
       "fim_experiencia": "2025-06-12",
       "contrato_vigencia": "Indeterminado; aditivo 2026 na pasta",
@@ -248,7 +250,7 @@ const PUBLICO = true;
       "cargo": "Closer",
       "tipo_vinculo": "",
       "oab": "",
-      "data_nascimento": "",
+      "data_nascimento": "0000-01-02",
       "data_admissao": "",
       "fim_experiencia": "",
       "contrato_vigencia": "",
@@ -263,7 +265,7 @@ const PUBLICO = true;
       "cargo": "Advogada",
       "tipo_vinculo": "PJ",
       "oab": "395.352 (OAB/SP)",
-      "data_nascimento": "",
+      "data_nascimento": "0000-12-01",
       "data_admissao": "2026-02-03",
       "fim_experiencia": "2026-05-04",
       "contrato_vigencia": "Indeterminado (inicio na assinatura 03/02/2026)",
@@ -293,7 +295,7 @@ const PUBLICO = true;
       "cargo": "Advogado",
       "tipo_vinculo": "PJ",
       "oab": "536.596 (OAB/SP)",
-      "data_nascimento": "",
+      "data_nascimento": "0000-07-08",
       "data_admissao": "2025-08-07",
       "fim_experiencia": "2025-11-05",
       "contrato_vigencia": "Indeterminado; ultimo aditivo 29/09/2025",
@@ -308,10 +310,25 @@ const PUBLICO = true;
       "cargo": "Advogada",
       "tipo_vinculo": "PJ",
       "oab": "516.354 (OAB/SP)",
-      "data_nascimento": "",
+      "data_nascimento": "0000-03-02",
       "data_admissao": "2025-04-17",
       "fim_experiencia": "2025-07-16",
       "contrato_vigencia": "Indeterminado; aditivo 29/09/2025 na pasta",
+      "status": "ativo",
+      "notas": ""
+    },
+    {
+      "id": "karla",
+      "nome": "Karla Mariana de Amorim Leite Oliveira",
+      "time_principal": "Operacional",
+      "papel_secundario": "",
+      "cargo": "Advogada",
+      "tipo_vinculo": "PJ",
+      "oab": "487.708 (OAB/SP)",
+      "data_nascimento": "0000-02-26",
+      "data_admissao": "2023-11-29",
+      "fim_experiencia": "2024-02-27",
+      "contrato_vigencia": "Indeterminado desde 29/11/2023; ultimo aditivo 17/03/2026 (R$ 4.000/mes desde jan/2026, reajuste IPCA a partir de jun/2026)",
       "status": "ativo",
       "notas": ""
     },
@@ -642,8 +659,8 @@ const PUBLICO = true;
     {
       "colaborador_id": "julia_folkis",
       "mes": "2026-06",
-      "entregue": false,
-      "arquivo": null
+      "entregue": true,
+      "arquivo": "NFe Julia 062026 1.pdf"
     },
     {
       "colaborador_id": "felipe",
@@ -752,6 +769,48 @@ const PUBLICO = true;
       "mes": "2026-07",
       "entregue": false,
       "arquivo": null
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "NFe Karla jan26.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "NFE Karla 02.2026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Karla 032026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Karla 042026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Karla 052026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Karla 062026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Karla 072026.pdf"
     }
   ],
   "ferias": [
@@ -844,6 +903,15 @@ const PUBLICO = true;
       "saldo": 0,
       "banco_horas": 0,
       "periodo_concessivo": ""
+    },
+    {
+      "colaborador_id": "karla",
+      "periodo_aquisitivo": "29/11/2025 - 28/11/2026",
+      "dias_direito": 30,
+      "dias_gozados": 13,
+      "saldo": 17,
+      "banco_horas": 0,
+      "periodo_concessivo": "27/12/2025 - 04/01/2026 (9d); 12/06/2026 - 15/06/2026 (4d)"
     }
   ],
   "sancoes": [],
@@ -947,6 +1015,26 @@ const PUBLICO = true;
       "total": 103,
       "pendentes": 4,
       "cancelados": 16
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-05",
+      "prazos": 16,
+      "tarefas": 86,
+      "audiencias": 2,
+      "total": 104,
+      "pendentes": 6,
+      "cancelados": 7
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-06",
+      "prazos": 10,
+      "tarefas": 93,
+      "audiencias": 0,
+      "total": 103,
+      "pendentes": 2,
+      "cancelados": 9
     }
   ],
   "kpi_closer": [
@@ -1160,6 +1248,113 @@ const PUBLICO = true;
       "meta": 0,
       "atingimento": 0
     }
+  ],
+  "metas_closer": {
+    "descricao": "Metas por faixa (Bronze/Prata/Ouro/Master), fixas todo mes. Felipe/Lindsey por quantidade de contratos pagos; Julia por valor R$ dos contratos pagos (fonte: CONTROLE DE COMISSOES JULIA 2026, so ate jun/2026); Pamela sem meta.",
+    "por_closer": {
+      "felipe": {
+        "tipo": "contratos",
+        "metrica": "pagos",
+        "faixas": [
+          {
+            "nome": "Bronze",
+            "min": 12
+          },
+          {
+            "nome": "Prata",
+            "min": 17
+          },
+          {
+            "nome": "Ouro",
+            "min": 25
+          },
+          {
+            "nome": "Master",
+            "min": 35
+          }
+        ]
+      },
+      "lindsey": {
+        "tipo": "contratos",
+        "metrica": "pagos",
+        "faixas": [
+          {
+            "nome": "Bronze",
+            "min": 12
+          },
+          {
+            "nome": "Prata",
+            "min": 17
+          },
+          {
+            "nome": "Ouro",
+            "min": 25
+          },
+          {
+            "nome": "Master",
+            "min": 35
+          }
+        ]
+      },
+      "julia_folkis": {
+        "tipo": "reais",
+        "metrica": "valor_contratos",
+        "faixas": [
+          {
+            "nome": "Bronze",
+            "min": 20000
+          },
+          {
+            "nome": "Prata",
+            "min": 50000
+          },
+          {
+            "nome": "Ouro",
+            "min": 80000
+          },
+          {
+            "nome": "Master",
+            "min": 150000
+          }
+        ]
+      },
+      "pamela": {
+        "tipo": null,
+        "obs": "Sem meta definida (contratada recente)."
+      }
+    }
+  },
+  "valor_contratos": [
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-02",
+      "valor": 1958.7,
+      "qtd_contratos": 1
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "valor": 27366.9,
+      "qtd_contratos": 6
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "valor": 24140.0,
+      "qtd_contratos": 9
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "valor": 20938.5,
+      "qtd_contratos": 9
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "valor": 44819.5,
+      "qtd_contratos": 9
+    }
   ]
 }
 </script>
@@ -1191,6 +1386,7 @@ const fmtBRL=v=>'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,max
 const fmtPct=v=>((v||0)*100).toFixed(1).replace('.',',')+'%';
 const mesLabel=m=>{if(!m)return '—';const[a,mm]=m.split('-');return MESES_PT[+mm]+'/'+a.slice(2);};
 const mesLongo=m=>{if(!m)return '—';const[a,mm]=m.split('-');return MESES_LONGO[+mm]+' de '+a;};
+const fmtNasc=iso=>{if(!iso)return '';const[a,m,d]=iso.split('-');return a==='0000'?d+'/'+m:d+'/'+m+'/'+a;};
 const parseISO=s=>{if(!s)return null;const[a,m,d]=s.split('-').map(Number);return new Date(a,m-1,d);};
 const parseBR=s=>{if(!s)return null;const p=s.trim().split('/');if(p.length!==3)return null;return new Date(+p[2],+p[1]-1,+p[0]);};
 const diasEntre=(a,b)=>Math.round((b-a)/86400000);
@@ -1432,7 +1628,7 @@ function fichaCard(c){
       <div class="kv"><div class="k">Admissão</div><div class="v">${c.data_admissao?c.data_admissao.split('-').reverse().join('/'):'<span class="muted">pendente</span>'}</div></div>
       <div class="kv"><div class="k">Tempo de casa</div><div class="v">${t?tempoTexto(t):'—'}</div></div>
       <div class="kv"><div class="k">Fim experiência</div><div class="v">${c.fim_experiencia?c.fim_experiencia.split('-').reverse().join('/'):'<span class="muted">—</span>'}</div></div>
-      <div class="kv"><div class="k">Nascimento</div><div class="v">${c.data_nascimento?c.data_nascimento.split('-').reverse().join('/'):'<span class="muted">cadastrar</span>'}</div></div>
+      <div class="kv"><div class="k">Nascimento</div><div class="v">${c.data_nascimento?fmtNasc(c.data_nascimento):'<span class="muted">cadastrar</span>'}</div></div>
       <div class="kv"><div class="k">Contrato</div><div class="v" style="font-size:12px">${c.contrato_vigencia||'—'}</div></div>
       <div class="kv"><div class="k">NF pendentes (2026)</div><div class="v">${nfPend?`<span class="cell-bad">${nfPend}</span>`:'<span class="cell-ok">0</span>'}</div></div>
       <div class="kv"><div class="k">Saldo de férias</div><div class="v">${fer?(fer.saldo+' dias'+(fer.banco_horas?` · ${fer.banco_horas}h banco`:'')):'—'}</div></div>
@@ -1533,7 +1729,7 @@ function telaAniversarios(){
   <div class="grid g2" style="margin-bottom:16px">
     <div class="card"><h3>Aniversariantes de ${MESES_LONGO[mesNum]}</h3>
       ${aniv.length?aniv.map(c=>`<div class="alert exp"><span class="ic" style="color:var(--accent)">${ic('aniversarios')}</span><div><b>${c.nome}</b> — ${c.data_nascimento.split('-').reverse().slice(0,2).join('/')}</div></div>`).join(''):'<div class="muted">Nenhum aniversariante cadastrado neste mês.</div>'}
-      ${semNasc.length?`<div class="muted" style="font-size:11.5px;margin-top:10px">⚠ ${semNasc.length} colaborador(es) sem data de nascimento cadastrada (os contratos não trazem a data). Preencha no <code>dados_rh.json</code> em <code>data_nascimento</code> (formato AAAA-MM-DD).</div>`:''}
+      ${semNasc.length?`<div class="muted" style="font-size:11.5px;margin-top:10px">⚠ Sem aniversário cadastrado: ${semNasc.map(c=>nomeCurto(c.id)).join(', ')} — não constam no Calendário 2026.</div>`:''}
     </div>
     <div class="card"><h3>Tempo de casa</h3>
       ${barrasH(DADOS.colaboradores.map(c=>{const t=tempoDeCasa(c.data_admissao);return t?{label:nomeCurto(c.id),value:+(t.dias/365).toFixed(2),color:corTime(c),sub:tempoTexto(t)}:null;}).filter(Boolean).sort((a,b)=>b.value-a.value),{fmt:v=>v.toFixed(1)+'a'})}
@@ -1569,6 +1765,42 @@ function telaComercial(){
 
   const totMes=linhasMes.reduce((s,k)=>({at:s.at+k.atendimentos,fe:s.fe+k.fechados,pa:s.pa+k.pagos}),{at:0,fe:0,pa:0});
 
+  // ----- Metas por faixa (Bronze/Prata/Ouro/Master) -----
+  const MC=(DADOS.metas_closer&&DADOS.metas_closer.por_closer)||{};
+  const faixaCor={Bronze:'#b45309',Prata:'#64748b',Ouro:'#b7791f',Master:'#7c3aed'};
+  const pillFaixa=n=>`<span class="pill" style="background:${faixaCor[n]}1f;color:${faixaCor[n]}">${n}</span>`;
+  const faixaDe=(v,faixas)=>{let atual=null,prox=null;faixas.forEach(f=>{if(v>=f.min)atual=f;else if(!prox)prox=f;});return {atual,prox};};
+  const valorContr=(cid,mes)=>{const r=(DADOS.valor_contratos||[]).find(x=>x.colaborador_id===cid&&x.mes===mes);return r?r.valor:null;};
+  const metasRows=closersF.map(c=>{
+    const cfg=MC[c.id];const nome=nomeCurto(c.id);
+    if(!cfg||!cfg.tipo){return `<tr><td>${nome}</td><td colspan="4" class="muted" style="font-size:12px">${(cfg&&cfg.obs)||'sem meta definida'}</td></tr>`;}
+    const reais=cfg.tipo==='reais';
+    const esc=cfg.faixas.map(f=>reais?`${f.nome[0]} ${f.min/1000}k`:`${f.nome[0]} ${f.min}`).join(' · ');
+    const escTxt=reais?`R$ ${esc}`:`${esc} contratos`;
+    let val;
+    if(reais){val=valorContr(c.id,m);}
+    else{const k=DADOS.kpi_closer.find(x=>x.colaborador_id===c.id&&x.mes===m);val=k?k.pagos:0;}
+    if(val==null){
+      return `<tr><td>${nome}</td><td class="muted" style="font-size:11.5px">${escTxt}</td><td class="num muted">—</td><td><span class="pill warn">sem dado</span></td><td class="muted" style="font-size:11px">Controle da Julia vai até jun/2026</td></tr>`;
+    }
+    const {atual,prox}=faixaDe(val,cfg.faixas);
+    const base=atual?atual.min:0;
+    const prog=prox?Math.max(3,Math.min(100,((val-base)/(prox.min-base))*100)):100;
+    const cor=atual?faixaCor[atual.nome]:'var(--bad)';
+    const status=atual?pillFaixa(atual.nome):'<span class="pill bad">abaixo</span>';
+    const falta=prox?(reais?fmtBRL(prox.min-val):(prox.min-val)):null;
+    const nota=prox?`faltam <b>${falta}</b> p/ ${prox.nome}`:'faixa máxima';
+    const realizado=reais?fmtBRL(val):`${val}<span class="muted" style="font-weight:400"> pagos</span>`;
+    return `<tr><td>${nome}</td><td class="muted" style="font-size:11.5px">${escTxt}</td>
+      <td class="num" style="font-weight:700">${realizado}</td>
+      <td>${status}</td>
+      <td><div class="bartrack" style="height:8px;margin-bottom:3px"><div class="barfill" style="width:${prog}%;background:${cor}"></div></div><span class="muted" style="font-size:10.5px">${nota}</span></td></tr>`;
+  }).join('');
+  const metaCard=`<div class="card" style="margin-bottom:16px"><h3>Metas por faixa — ${mesLongo(m)}</h3>
+    <div class="muted" style="font-size:11.5px;margin-bottom:10px"><b>Felipe/Lindsey</b>: meta por nº de contratos <b>pagos</b> no mês. <b>Julia</b>: meta por <b>valor R$</b> dos contratos pagos (controle da Julia). <b>Pamela</b>: sem meta. Faixas fixas mensais: Bronze/Prata/Ouro/Master.</div>
+    <div class="scroll"><table><thead><tr><th>Closer</th><th>Escala da meta</th><th class="num">Realizado</th><th>Faixa</th><th style="width:190px">Progresso</th></tr></thead><tbody>${metasRows||'<tr><td colspan="5" class="muted">Sem closers no filtro.</td></tr>'}</tbody></table></div>
+  </div>`;
+
   const tbl=linhasMes.map(k=>{const c=colab(k.colaborador_id);return `<tr>
       <td>${c.nome}</td>
       <td class="num">${k.atendimentos}</td>
@@ -1579,7 +1811,7 @@ function telaComercial(){
 
   return `<h2 class="section">Comercial / Closers</h2>
   <div class="sub">Desempenho de fechamento por closer. Contrato fechado = status <b>Contrato Assinado</b> ou <b>Pago</b>; pago = status <b>Pago</b>. Conversão = fechados ÷ atendimentos qualificados (exclui No Show e Desqualificado). Dados agregados por closer — nunca por cliente (LGPD).</div>
-  <div class="banner">⚠ <b>Metas:</b> não há meta numérica individual por closer nas planilhas — apenas faixas coletivas (Bronze/Prata/Ouro/Master), que mudaram de <b>contagem de contratos</b> (Bronze = 12/mês até fev/2026) para <b>valor em R$</b> a partir de mar/2026. Por isso a coluna Meta/Atingimento fica zerada. Defina metas por pessoa para habilitar o comparativo meta × realizado.</div>
+  ${metaCard}
   <div class="grid g3" style="margin-bottom:16px">
     <div class="card"><h3>Atendimentos ${mesLabel(m)}</h3><div class="kpi">${totMes.at}</div></div>
     <div class="card"><h3>Fechados ${mesLabel(m)}</h3><div class="kpi" style="color:var(--ok)">${totMes.fe}</div></div>
