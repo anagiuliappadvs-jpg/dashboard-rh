@@ -1,0 +1,3460 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de RH — Paccola & Pelegrini</title>
+<style>
+  :root{
+    --bg:#fbfbfd; --panel:#ffffff; --panel2:#f4f5f7; --line:#ecedf1;
+    --txt:#111827; --muted:#6b7280; --muted2:#9ca3af;
+    --accent:#4f46e5; --accent2:#6366f1; --accent-soft:#eef2ff;
+    --com:#d97706; --ope:#059669; --adm:#2563eb;
+    --ok:#059669; --warn:#d97706; --bad:#dc2626;
+    --chip:#f4f5f7;
+    --shadow:0 1px 2px rgba(17,24,39,.04),0 1px 3px rgba(17,24,39,.06);
+    --shadow-h:0 8px 24px rgba(17,24,39,.08);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  #app{display:flex;min-height:100vh}
+  /* Sidebar */
+  aside{width:238px;flex:0 0 238px;background:var(--panel);border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{font-weight:700;font-size:15px;letter-spacing:-.2px;padding:6px 10px 18px;color:var(--txt)}
+  .brand small{display:block;color:var(--muted2);font-weight:500;font-size:11px;margin-top:4px;letter-spacing:.3px}
+  nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;color:var(--muted);padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13.5px;margin-bottom:3px;transition:background .12s,color .12s}
+  nav button:hover{background:var(--panel2);color:var(--txt)}
+  nav button.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  nav button .ic{width:20px;text-align:center;font-size:15px;opacity:.9}
+  .lockbar{margin-top:16px;padding:12px 6px 4px;border-top:1px solid var(--line)}
+  .lockbar button{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:9px;border-radius:10px;cursor:pointer;font-size:12.5px;transition:border-color .12s,background .12s}
+  .lockbar button:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .lockstate{font-size:11px;color:var(--muted2);margin-top:7px;text-align:center}
+  /* Main */
+  main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{position:sticky;top:0;z-index:5;background:rgba(251,251,253,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 26px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+  .topbar h1{font-size:17px;font-weight:700;margin:0;margin-right:auto;letter-spacing:-.3px}
+  .filter{display:flex;flex-direction:column;gap:4px}
+  .filter label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted2);font-weight:600}
+  select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:13px;min-width:124px;cursor:pointer;transition:border-color .12s}
+  select:hover{border-color:#d7d9e0}
+  select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .content{padding:26px;max-width:1200px}
+  h2.section{font-size:20px;font-weight:700;margin:0 0 4px;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;max-width:900px;line-height:1.5}
+  /* cards */
+  .grid{display:grid;gap:16px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:1000px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);transition:box-shadow .15s}
+  .card:hover{box-shadow:var(--shadow-h)}
+  .card h3{margin:0 0 12px;font-size:11.5px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .kpi{font-size:32px;font-weight:700;letter-spacing:-1px}
+  .kpi small{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:0}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+  .pill.com{background:rgba(217,119,6,.1);color:#b45309}
+  .pill.ope{background:rgba(5,150,105,.1);color:#047857}
+  .pill.adm{background:rgba(37,99,235,.1);color:#1d4ed8}
+  .pill.ok{background:rgba(5,150,105,.1);color:#047857}
+  .pill.warn{background:rgba(217,119,6,.1);color:#b45309}
+  .pill.bad{background:rgba(220,38,38,.1);color:#b91c1c}
+  .pill.exp{background:rgba(99,102,241,.1);color:#4f46e5}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--muted2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;background:var(--panel)}
+  tbody tr:last-child td{border-bottom:0}
+  tr:hover td{background:var(--panel2)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .cell-ok{color:var(--ok);font-weight:700}
+  .cell-bad{color:var(--bad);font-weight:700}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+  .muted{color:var(--muted)}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:11px;color:var(--muted);margin:2px 4px 2px 0}
+  .alert{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border-radius:12px;margin-bottom:9px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
+  .alert .ic{font-size:16px;margin-top:1px}
+  .alert.warn{border-left:3px solid var(--warn)}
+  .alert.bad{border-left:3px solid var(--bad)}
+  .alert.exp{border-left:3px solid var(--accent)}
+  .alert b{color:var(--txt)}
+  .locked-note{color:var(--muted);font-style:italic;font-size:12px}
+  .mask{letter-spacing:2px;color:var(--muted2)}
+  .banner{background:var(--accent-soft);border:1px solid rgba(99,102,241,.22);border-radius:14px;padding:13px 15px;margin-bottom:18px;font-size:13px;color:#3730a3;line-height:1.5}
+  .banner b{color:#312e81}
+  .fichacard{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .15s}
+  .fichacard:hover{box-shadow:var(--shadow-h)}
+  .fichahead{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:13px}
+  .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex:0 0 44px}
+  .fichabody{padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
+  .kv{font-size:12.5px}
+  .kv .k{color:var(--muted2);text-transform:uppercase;font-size:10px;letter-spacing:.4px;font-weight:600;margin-bottom:2px}
+  .kv .v{color:var(--txt);font-size:13.5px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:6px 0 14px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .matrix td.yes{color:var(--ok);text-align:center;font-weight:700}
+  .matrix td.no{color:var(--bad);text-align:center;background:rgba(220,38,38,.05);font-weight:700}
+  .matrix td.na{color:var(--muted2);text-align:center}
+  .scroll{overflow:auto}
+  .foot{color:var(--muted2);font-size:11px;padding:20px 26px;border-top:1px solid var(--line);margin-top:24px;line-height:1.5}
+  .barrow{display:grid;grid-template-columns:130px 1fr 60px;align-items:center;gap:11px;margin:9px 0;font-size:12.5px}
+  .bartrack{background:var(--panel2);border-radius:8px;height:18px;overflow:hidden}
+  .barfill{height:100%;border-radius:8px;transition:width .3s}
+  .switchbtn{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:5px 11px;border-radius:8px;cursor:pointer;font-size:12px;transition:all .12s}
+  .switchbtn:hover{border-color:#d7d9e0}
+  .switchbtn.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+  .overlay{position:fixed;inset:0;background:rgba(17,24,39,.4);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;width:330px;box-shadow:0 20px 50px rgba(17,24,39,.2)}
+  .modal h3{margin:0 0 12px}
+  .modal input{width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--txt);font-size:14px}
+  .modal input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .modal .row{display:flex;gap:8px;margin-top:14px}
+  .modal button{flex:1;padding:10px;border-radius:9px;border:0;cursor:pointer;font-weight:600}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+  .err{color:var(--bad);font-size:12px;margin-top:8px;min-height:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside>
+    <div class="brand">Paccola &amp; Pelegrini<small>Dashboard de RH · 2026</small></div>
+    <nav id="nav"></nav>
+    <div class="lockbar">
+      <button id="lockBtn">Dados restritos</button>
+      <div class="lockstate" id="lockState">bloqueado</div>
+    </div>
+  </aside>
+  <main>
+    <div class="topbar">
+      <h1 id="pageTitle">Visão geral</h1>
+      <div class="filter"><label>Time</label><select id="fTime"></select></div>
+      <div class="filter"><label>Cargo</label><select id="fCargo"></select></div>
+      <div class="filter"><label>Mês</label><select id="fMes"></select></div>
+      <div class="filter"><label>Pessoa</label><select id="fPessoa"></select></div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="foot" id="foot"></div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>Dados restritos (LGPD)</h3>
+    <p class="muted" style="font-size:12.5px;margin:0 0 10px">A remuneração é visível apenas para a gestão. Digite a senha.</p>
+    <input type="password" id="pwd" placeholder="senha" autocomplete="off">
+    <div class="err" id="pwdErr"></div>
+    <div class="row">
+      <button class="btn-ghost" id="cancelPwd">Cancelar</button>
+      <button class="btn-primary" id="okPwd">Desbloquear</button>
+    </div>
+  </div>
+</div>
+
+<div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:100;padding:20px">
+  <div class="modal" style="width:340px;text-align:center">
+    <div style="font-weight:700;font-size:16px">Paccola &amp; Pelegrini</div>
+    <div class="muted" style="font-size:12px;margin-bottom:16px">Dashboard de RH · acesso restrito</div>
+    <input id="loginCode" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="código" style="text-align:center;letter-spacing:10px;font-size:22px;padding:12px">
+    <div class="err" id="loginErr"></div>
+    <button class="btn-primary" id="loginBtn" style="width:100%;margin-top:12px;padding:11px">Entrar</button>
+    <div class="muted" style="font-size:10.5px;margin-top:12px">Conteúdo criptografado — sem o código não é legível.</div>
+  </div>
+</div>
+<script id="enc-data" type="application/json">
+null
+</script>
+
+<script>
+/* ===== Camada restrita: senha simples do lado do cliente (NÃO é segurança forte) =====
+   Troque o valor abaixo para mudar a senha dos dados restritos. */
+const SENHA_RESTRITA = "rh2026";
+/* PUBLICO=true gera a versão compartilhável: ignora o dados_rh.json externo e esconde tudo que for sensível (remuneração/sanções). */
+const PUBLICO = false;
+</script>
+
+<script id="fallback-data" type="application/json">
+{
+  "meta": {
+    "escritorio": "Paccola & Pelegrini Advogados",
+    "gerado_em": "2026-07-03",
+    "ano_referencia": 2026,
+    "observacoes_gerais": [
+      "Metas por faixa por closer (planilhas de Controle de Fechamento): Felipe/Lindsey por nº de contratos pagos (Bronze12/Prata17/Ouro25/Master35); Julia por valor R$ (Bronze20k/Prata50k/Ouro80k/Master150k, valor nao rastreado no KPI); Pamela sem meta.",
+      "Datas de nascimento (dia/mes) do Calendario 2026 (pasta Documentos Internos), sem ano. Faltam Bruna Cardoso e Daielly (nao constam no calendario).",
+      "Produtividade operacional: workbook 'Produtividade Astrea - 2026' so possui abas de Maio e Junho/2026.",
+      "Fluxo de vinculo: experiencia (antes) -> admissao (inicio de fato) -> contrato (firmado na ou APOS a admissao). As datas de experiencia NAO estao nos documentos (preenchiveis manual; ex.: Ana exp. ate 30/03/2026). Quem tem admissao/contrato = admitido/efetivado; quem nao tem (Pamela, Bruna Cardoso, Daielly) = em experiencia.",
+      "Camada restrita (remuneracao + sancoes) protegida por senha simples no cliente. Senha padrao: rh2026 (troque no topo do arquivo dashboard.html).",
+      "Karla incluida no roster em 03/07/2026 a pedido da gestao (advogada operacional). NF de junho da Julia adicionada ao Drive em 03/07 e marcada como entregue.",
+      "Reajuste salarial: sempre 1 ano apos o contrato/ultimo aditivo (campo data_base_reajuste). Dashboard avisa 60 dias antes, todo ano. Lindsey e ESTIMATIVA (aditivo 2026 sem data no doc) - corrigir se souber a data exata.",
+      "Ferias auditadas 09/07/2026 ficha por ficha: saldos conferem com as planilhas; corrigido 'dias_gozados' (o dashboard antes so contava o ultimo gozo e omitia as ferias coletivas de dez/2025). Rhaissa saldo -3 = 21 dias de ferias FUTURAS (jul/ago 2026) que excedem o direito do periodo - conferir com RH qual periodo aquisitivo absorve.",
+      "Avaliacoes de desempenho operacional (360 por pares, escala 0-3, 6 quesitos) - ciclos marco e julho/2026, analise da Emilia. Dado SENSIVEL. Marco incluia Natally (ex) e nao Bruna Cardoso; julho o inverso.",
+      "Admissao/tempo de casa = SEMPRE o contrato MAIS ANTIGO da pessoa no Drive (nao o mais recente). Auditado 09/07/2026: Felipe corrigido 04/06/2026 -> 04/12/2024 (comercial/closer original). Pedro corrigido 07/08/2025 -> 08/05/2023 (gestao decidiu que o estagio conta como tempo de casa).",
+      "Remuneracao Julia dividida (planilha Financeiro RH): salario_base=parte OPERACIONAL (advogada, inclui funcao comercial fixa desde mar), comissao=parte COMERCIAL (closer). Corrigido erro de maio (bonus 100 contado 2x). Socias (Emilia/Amanda) recebem so exito jan-mai/2026; pro-labore fixo R$21.000 a partir de jun. Pro-labore e SENSIVEL (so gestao, fora do link).",
+      "Remuneracao operacional dividida em FIXA + ACORDOS/SUCUMBENCIA (campos fixa/acordos). Julia tem tambem 'comercial' (R$360 closer, mai-jul) separado. Karla/Rhaissa/Bruna Santana: comissao com rotulo generico classificada como acordos (valores pequenos). Fonte Financeiro RH SAIDAS.",
+      "AVALIACAO CLOSERS: atendimentos e ASSINADOS vem do KPI pela DATA DA REUNIAO (relativizado - a data nao e a da assinatura real). PAGOS vem do 'CRM 2026 - CLAUDE' pela DATA REAL DE PAGAMENTO (campo pagos_crm: qtd + valor). Julho 2026 e PARCIAL (foto ~03-13/07). Metas por faixa (contratos) passam a usar os PAGOS reais do CRM. Socias (Emilia/Amanda) aparecem como responsaveis em alguns contratos do CRM mas nao entram na avaliacao de closers.",
+      "VALOR = ENTRADA paga (sinal), nao valor total do contrato. Fonte: CRMs mensais (aba 'Novas Entradas'), jan-jun/2026 (campo entrada_crm). NAO existe CRM de julho -> julho sem valor de entrada. A mestre CRM CLAUDE nao tem valor de entrada (so parcela x qtd). Felipe junho CORRIGIDO: 2 contratos com entrada/total trocados na planilha (mostrava ~15.231, corrigido ~6.191) - avisar RH pra corrigir na origem. qtd de PAGOS vem da mestre por data de pagamento; ENTRADA vem dos CRMs mensais por mes do arquivo (fontes diferentes, qtd pode divergir levemente).",
+      "KPI_closer reprocessado do zero em 13/07/2026 (planilha KPI atual) - julho antes estava com foto de 03/07 (incompleto). Atendimentos/assinados/conversao agora refletem o KPI de 13/07.",
+      "Julia remuneracao corrigida (usuaria 13/07): OPERACIONAL = 3500 fixo + comissao acordos/sucumbencia; COMERCIAL = 500 fixo (funcao, desde mar) + comissao comercial (360, se bate meta). Bruna Pelizardo Cardoso: fixo = 3000 (junho antes estava 1100 proporcional -> ajustado p/ 3000)."
+    ],
+    "atualizado_em": "2026-07-13"
+  },
+  "colaboradores": [
+    {
+      "id": "ana_giulia",
+      "nome": "Ana Giulia Lenci Paccola",
+      "time_principal": "Administrativo",
+      "papel_secundario": "",
+      "cargo": "Gerente Administrativa",
+      "tipo_vinculo": "PJ",
+      "oab": "",
+      "data_nascimento": "0000-03-19",
+      "data_admissao": "2026-04-01",
+      "fim_experiencia": "2026-03-30",
+      "contrato_vigencia": "Indeterminado (inicio 01/04/2026)",
+      "status": "ativo",
+      "notas": "Experiencia ate 30/03/2026; admitida (inicio de fato) em abr/2026 (contrato firmado na/apos a admissao). NF a partir de mai/2026 (nf_desde); jan-abr nao contam como pendencia.",
+      "nf_desde": "2026-05",
+      "data_base_reajuste": "2026-04-01"
+    },
+    {
+      "id": "julia_folkis",
+      "nome": "Julia Folkis Theodoro",
+      "time_principal": "Operacional",
+      "papel_secundario": "Comercial",
+      "cargo": "Advogada",
+      "tipo_vinculo": "PJ",
+      "oab": "471.293 (OAB/SP)",
+      "data_nascimento": "0000-04-21",
+      "data_admissao": "2024-06-06",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado; ultimo aditivo 05/03/2026",
+      "status": "ativo",
+      "notas": "Conta 1x no headcount (Operacional), mas aparece nos filtros de Operacional e Comercial.",
+      "data_base_reajuste": "2026-03-05"
+    },
+    {
+      "id": "felipe",
+      "nome": "Felipe Fontineles Martins",
+      "time_principal": "Comercial",
+      "papel_secundario": "",
+      "cargo": "Closer",
+      "tipo_vinculo": "PJ",
+      "oab": "26.824 (OAB/PI)",
+      "data_nascimento": "0000-06-17",
+      "data_admissao": "2024-12-04",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado; contrato comercial/closer original 04/12/2024, aditivo 17/03/2026, contrato de advogado 04/06/2026",
+      "status": "ativo",
+      "notas": "Admissao pelo contrato MAIS ANTIGO (comercial/closer, 04/12/2024); passou a advogado com novo contrato em 04/06/2026. Tempo de casa desde 04/12/2024. Reajuste conta do contrato mais recente.",
+      "data_base_reajuste": "2026-06-04"
+    },
+    {
+      "id": "lindsey",
+      "nome": "Lindsey de Fatima Pires Alencar",
+      "time_principal": "Comercial",
+      "papel_secundario": "",
+      "cargo": "Closer",
+      "tipo_vinculo": "PJ",
+      "oab": "",
+      "data_nascimento": "0000-10-22",
+      "data_admissao": "2025-03-14",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado; aditivo 2026 na pasta",
+      "status": "ativo",
+      "notas": "",
+      "data_base_reajuste": "2026-03-14"
+    },
+    {
+      "id": "pamela",
+      "nome": "Pamela Cristina de Sales Santos",
+      "time_principal": "Comercial",
+      "papel_secundario": "",
+      "cargo": "Closer",
+      "tipo_vinculo": "",
+      "oab": "",
+      "data_nascimento": "0000-01-02",
+      "data_admissao": "",
+      "fim_experiencia": "",
+      "contrato_vigencia": "",
+      "status": "experiencia",
+      "notas": "Admissao pendente - sem contrato de prestacao de servicos na pasta (so Termo de Uso de Imagem). Preencher admissao para calcular fim de experiencia."
+    },
+    {
+      "id": "bruna_santana",
+      "nome": "Bruna Santana de Andrade",
+      "time_principal": "Operacional",
+      "papel_secundario": "",
+      "cargo": "Advogada",
+      "tipo_vinculo": "PJ",
+      "oab": "395.352 (OAB/SP)",
+      "data_nascimento": "0000-12-01",
+      "data_admissao": "2026-02-03",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado (inicio na assinatura 03/02/2026)",
+      "status": "ativo",
+      "notas": "Esteve em experiencia ate fev/2026 (contrato formalizado 03/02/2026). Sem NF durante a experiencia; NF a partir de mar/2026 (nf_desde). jan-fev nao contam como pendencia.",
+      "nf_desde": "2026-03",
+      "data_base_reajuste": "2026-02-03"
+    },
+    {
+      "id": "bruna_cardoso",
+      "nome": "Bruna Mariana Pelizardo Cardoso",
+      "time_principal": "Operacional",
+      "papel_secundario": "",
+      "cargo": "Advogada",
+      "tipo_vinculo": "",
+      "oab": "",
+      "data_nascimento": "",
+      "data_admissao": "",
+      "fim_experiencia": "",
+      "contrato_vigencia": "",
+      "status": "experiencia",
+      "notas": "Admissao pendente - sem contrato na pasta (so Termo de uso de imagem). Remuneracao indica inicio por volta de jun/2026. Preencher admissao."
+    },
+    {
+      "id": "pedro_sandrin",
+      "nome": "Pedro Henrique de Oliveira Sandrin",
+      "time_principal": "Operacional",
+      "papel_secundario": "",
+      "cargo": "Advogado",
+      "tipo_vinculo": "PJ",
+      "oab": "536.596 (OAB/SP)",
+      "data_nascimento": "0000-07-08",
+      "data_admissao": "2023-05-08",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado. Estagio desde 08/05/2023; Auxiliar Juridico 21/01/2025; Advogado (ultimo aditivo 29/09/2025).",
+      "status": "ativo",
+      "notas": "Tempo de casa conta desde o ESTAGIO (inicio 08/05/2023). Trajetoria: estagiario -> auxiliar juridico (21/01/2025) -> advogado. Reajuste conta do contrato/aditivo mais recente.",
+      "data_base_reajuste": "2025-09-29"
+    },
+    {
+      "id": "rhaissa",
+      "nome": "Rhaissa Cristina Leme Oliveira",
+      "time_principal": "Operacional",
+      "papel_secundario": "",
+      "cargo": "Advogada",
+      "tipo_vinculo": "PJ",
+      "oab": "516.354 (OAB/SP)",
+      "data_nascimento": "0000-03-02",
+      "data_admissao": "2025-04-17",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado; aditivo 29/09/2025 na pasta",
+      "status": "ativo",
+      "notas": "",
+      "data_base_reajuste": "2025-09-29"
+    },
+    {
+      "id": "karla",
+      "nome": "Karla Mariana de Amorim Leite Oliveira",
+      "time_principal": "Operacional",
+      "papel_secundario": "Administrativo",
+      "cargo": "Advogada",
+      "tipo_vinculo": "PJ",
+      "oab": "487.708 (OAB/SP)",
+      "data_nascimento": "0000-02-26",
+      "data_admissao": "2023-11-29",
+      "fim_experiencia": "",
+      "contrato_vigencia": "Indeterminado desde 29/11/2023; ultimo aditivo 17/03/2026 (R$ 4.000/mes desde jan/2026, reajuste IPCA a partir de jun/2026)",
+      "status": "ativo",
+      "notas": "Advogada (operacional) e Controller (funcao administrativa/financeira). Conta 1x no headcount (Operacional), mas aparece nos filtros Operacional e Administrativo.",
+      "tags": [
+        "Controller"
+      ],
+      "data_base_reajuste": "2026-03-17"
+    },
+    {
+      "id": "daielly",
+      "nome": "Daielly",
+      "time_principal": "Administrativo",
+      "papel_secundario": "",
+      "cargo": "Auxiliar Administrativo",
+      "tipo_vinculo": "",
+      "oab": "",
+      "data_nascimento": "",
+      "data_admissao": "",
+      "fim_experiencia": "",
+      "contrato_vigencia": "",
+      "status": "experiencia",
+      "notas": "Admissao pendente - sem contrato na pasta Colaboradores (so doc de Onboarding). Primeiro pagamento pago em jul/2026. Incluir depois."
+    }
+  ],
+  "remuneracao": [
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-01",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-01",
+      "salario_base": 1675,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1675
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-01",
+      "salario_base": 3426.14,
+      "comissao": 184.72,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3610.86,
+      "fixa": 3426.14,
+      "acordos": 184.72,
+      "comercial": 0,
+      "comercial_fixo": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-01",
+      "salario_base": 1600,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1600
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-01",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-01",
+      "salario_base": 3000,
+      "comissao": 19.25,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3019.25,
+      "fixa": 3000,
+      "acordos": 19.25,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-02",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-02",
+      "salario_base": 1775,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1775
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-02",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0,
+      "comercial_fixo": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-02",
+      "salario_base": 1700,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1700
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-02",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-02",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-03",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-03",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-03",
+      "salario_base": 1775,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1775
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "salario_base": 4000,
+      "comissao": 1177.08,
+      "bonus": 0,
+      "outros": 0,
+      "total": 5177.08,
+      "fixa": 3500,
+      "acordos": 1177.08,
+      "comercial": 0,
+      "comercial_fixo": 500
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-03",
+      "salario_base": 1700,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1700
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-03",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-03",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-04",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 100,
+      "outros": 0,
+      "total": 3100
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-04",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-04",
+      "salario_base": 1775,
+      "comissao": 320,
+      "bonus": 0,
+      "outros": 0,
+      "total": 2095
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "salario_base": 4000,
+      "comissao": 240,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4240,
+      "fixa": 3500,
+      "acordos": 240,
+      "comercial": 0,
+      "comercial_fixo": 500
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-04",
+      "salario_base": 1761,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1761
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-04",
+      "salario_base": 3500,
+      "comissao": 107,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3607,
+      "fixa": 3500,
+      "acordos": 107,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-04",
+      "salario_base": 2903.23,
+      "comissao": 0,
+      "bonus": 100,
+      "outros": 0,
+      "total": 3003.23,
+      "fixa": 2903.23,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-05",
+      "salario_base": 6500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 6500
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-05",
+      "salario_base": 3266.67,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3266.67,
+      "fixa": 3266.67,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-05",
+      "salario_base": 1775,
+      "comissao": 280,
+      "bonus": 0,
+      "outros": 0,
+      "total": 2055
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "salario_base": 4000,
+      "comissao": 896.15,
+      "bonus": 100,
+      "outros": 0,
+      "total": 4996.15,
+      "fixa": 3500,
+      "acordos": 536.15,
+      "comercial": 360,
+      "comercial_fixo": 500
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-05",
+      "salario_base": 1761,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1761
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-05",
+      "salario_base": 1750,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1750
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-05",
+      "salario_base": 3500,
+      "comissao": 942.27,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4442.27,
+      "fixa": 3500,
+      "acordos": 942.27,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-05",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-06",
+      "salario_base": 6500,
+      "comissao": 118.13,
+      "bonus": 0,
+      "outros": 0,
+      "total": 6618.13
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-06",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-06",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-06",
+      "salario_base": 1775,
+      "comissao": 280,
+      "bonus": 0,
+      "outros": 0,
+      "total": 2055
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "salario_base": 4000,
+      "comissao": 1160.68,
+      "bonus": 0,
+      "outros": 0,
+      "total": 5160.68,
+      "fixa": 3500,
+      "acordos": 800.68,
+      "comercial": 360,
+      "comercial_fixo": 500
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-06",
+      "salario_base": 1761,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1761
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-06",
+      "salario_base": 2100,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 2100
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-06",
+      "salario_base": 3500,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3500,
+      "fixa": 3500,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-06",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-07",
+      "salario_base": 6500,
+      "comissao": 1159.07,
+      "bonus": 0,
+      "outros": 0,
+      "total": 7659.07
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-07",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-07",
+      "salario_base": 3500,
+      "comissao": 73.97,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3573.97,
+      "fixa": 3500,
+      "acordos": 73.97,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-07",
+      "salario_base": 540,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 540
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-07",
+      "salario_base": 2600,
+      "comissao": 300,
+      "bonus": 0,
+      "outros": 0,
+      "total": 2900
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-07",
+      "salario_base": 4000,
+      "comissao": 1078.15,
+      "bonus": 0,
+      "outros": 0,
+      "total": 5078.15,
+      "fixa": 3500,
+      "acordos": 718.15,
+      "comercial": 360,
+      "comercial_fixo": 500
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-07",
+      "salario_base": 1761,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 1761
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-07",
+      "salario_base": 2100,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 2100
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-07",
+      "salario_base": 3500,
+      "comissao": 106.95,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3606.95,
+      "fixa": 3500,
+      "acordos": 106.95,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-07",
+      "salario_base": 3000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3000,
+      "fixa": 3000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-01",
+      "salario_base": 3800,
+      "comissao": 184.72,
+      "bonus": 0,
+      "outros": 0,
+      "total": 3984.72,
+      "fixa": 3800,
+      "acordos": 184.72,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-02",
+      "salario_base": 4000,
+      "comissao": 2.08,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4002.08,
+      "fixa": 4000,
+      "acordos": 2.08,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-03",
+      "salario_base": 4000,
+      "comissao": 0,
+      "bonus": 100,
+      "outros": 0,
+      "total": 4100,
+      "fixa": 4000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-04",
+      "salario_base": 4000,
+      "comissao": 0,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4000,
+      "fixa": 4000,
+      "acordos": 0,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-05",
+      "salario_base": 4000,
+      "comissao": 61.43,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4061.43,
+      "fixa": 4000,
+      "acordos": 61.43,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-06",
+      "salario_base": 4000,
+      "comissao": 147.15,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4147.15,
+      "fixa": 4000,
+      "acordos": 147.15,
+      "comercial": 0
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-07",
+      "salario_base": 4000,
+      "comissao": 400.43,
+      "bonus": 0,
+      "outros": 0,
+      "total": 4400.43,
+      "fixa": 4000,
+      "acordos": 400.43,
+      "comercial": 0
+    }
+  ],
+  "notas_fiscais": [
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-01",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "NFe Julia jan26.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "NFe Felipe jan26.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "Nfe Lindsey jan26.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-01",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-01",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-01",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "NFe Pedro jan 26.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "Nota fiscal Rhaissa janeiro 2026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-01",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-02",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "NFe Julia fev26.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "NFe Felipe 022026.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "Nota Fiscal Lindsey Janeiro de 2026.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-02",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-02",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-02",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "NFe Pedro fev26.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "Nota fiscal Rhaissa - fevereiro 2026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-02",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-03",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Julia 032026.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Felipe 032026.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Lindsey 032026.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-03",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe - Bruna S. Andrade 032026.pdf"
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-03",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Pedro 032026.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Rhaissa 032026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-03",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-04",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Julia 042026.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Felipe 042026.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Lindsey 042026.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-04",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Bruna 042026 (1).pdf"
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-04",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Pedro 042026.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Rhaissa 042026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-04",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Ana 052026.pdf"
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Julia 052026.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Felipe 052026.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Lindsey 052026.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-05",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Bruna 052026.pdf"
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-05",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Pedro 052026.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Rhaissa 052026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-05",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Ana 062026.pdf"
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Julia 062026 1.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Felipe 062026.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Lindsey 062026.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-06",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Bruna Andrade 062026.pdf"
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-06",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Pedro 062026.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Rhaissa 062026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-06",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "ana_giulia",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Ana Giulia 072026.pdf"
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Julia 072026.pdf"
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Felipe 072026.pdf"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Lindsey 072026.pdf"
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-07",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Bruna Andrade 072026.pdf"
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-07",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Pedro 072026.pdf"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Rhaissa 072026.pdf"
+    },
+    {
+      "colaborador_id": "daielly",
+      "mes": "2026-07",
+      "entregue": false,
+      "arquivo": null
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-01",
+      "entregue": true,
+      "arquivo": "NFe Karla jan26.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-02",
+      "entregue": true,
+      "arquivo": "NFE Karla 02.2026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-03",
+      "entregue": true,
+      "arquivo": "NFe Karla 032026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-04",
+      "entregue": true,
+      "arquivo": "NFe Karla 042026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-05",
+      "entregue": true,
+      "arquivo": "NFe Karla 052026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-06",
+      "entregue": true,
+      "arquivo": "NFe Karla 062026.pdf"
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-07",
+      "entregue": true,
+      "arquivo": "NFe Karla 072026.pdf"
+    }
+  ],
+  "ferias": [
+    {
+      "colaborador_id": "ana_giulia",
+      "periodo_aquisitivo": "",
+      "dias_direito": 0,
+      "dias_gozados": 0,
+      "saldo": 0,
+      "banco_horas": 4,
+      "periodo_concessivo": ""
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "periodo_aquisitivo": "06/06/2025 - 05/06/2026",
+      "dias_direito": 30,
+      "dias_gozados": 17,
+      "saldo": 13,
+      "banco_horas": 4,
+      "periodo_concessivo": "24/12/2025 - 04/01/2026 (12); 23/04/2026 - 27/04/2026 (5)"
+    },
+    {
+      "colaborador_id": "felipe",
+      "periodo_aquisitivo": "04/12/2024 - 03/12/2025",
+      "dias_direito": 30,
+      "dias_gozados": 28,
+      "saldo": 2,
+      "banco_horas": 0,
+      "periodo_concessivo": "24/12/2024 - 01/01/2025 (9); 07/01/2025 - 12/01/2025 (6); 24/12/2025 - 04/01/2026 (12); 02/04/2026 (1)"
+    },
+    {
+      "colaborador_id": "lindsey",
+      "periodo_aquisitivo": "14/03/2025 - 13/03/2026",
+      "dias_direito": 30,
+      "dias_gozados": 13,
+      "saldo": 17,
+      "banco_horas": 0,
+      "periodo_concessivo": "24/12/2025 - 04/01/2026 (12); 02/04/2026 (1)"
+    },
+    {
+      "colaborador_id": "pamela",
+      "periodo_aquisitivo": "",
+      "dias_direito": 0,
+      "dias_gozados": 0,
+      "saldo": 0,
+      "banco_horas": 0,
+      "periodo_concessivo": ""
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "periodo_aquisitivo": "",
+      "dias_direito": 30,
+      "dias_gozados": 12,
+      "saldo": 18,
+      "banco_horas": 0,
+      "periodo_concessivo": "24/12/2025 - 04/01/2026"
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "periodo_aquisitivo": "",
+      "dias_direito": 0,
+      "dias_gozados": 0,
+      "saldo": 0,
+      "banco_horas": 0,
+      "periodo_concessivo": ""
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "periodo_aquisitivo": "01/01/2025 - 31/12/2025",
+      "dias_direito": 30,
+      "dias_gozados": 26,
+      "saldo": 4,
+      "banco_horas": 0,
+      "periodo_concessivo": "24/12/2025 - 04/01/2026 (12); 06/04/2026 - 19/04/2026 (14)"
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "periodo_aquisitivo": "04/02/2025 - 03/02/2026",
+      "dias_direito": 30,
+      "dias_gozados": 33,
+      "saldo": -3,
+      "banco_horas": 0,
+      "periodo_concessivo": "24/12/2025 - 04/01/2026 (12); 27/07/2026 - 16/08/2026 (21)"
+    },
+    {
+      "colaborador_id": "daielly",
+      "periodo_aquisitivo": "",
+      "dias_direito": 0,
+      "dias_gozados": 0,
+      "saldo": 0,
+      "banco_horas": 0,
+      "periodo_concessivo": ""
+    },
+    {
+      "colaborador_id": "karla",
+      "periodo_aquisitivo": "29/11/2025 - 28/11/2026",
+      "dias_direito": 30,
+      "dias_gozados": 13,
+      "saldo": 17,
+      "banco_horas": 0,
+      "periodo_concessivo": "27/12/2025 - 04/01/2026 (9d); 12/06/2026 - 15/06/2026 (4d)"
+    }
+  ],
+  "sancoes": [
+    {
+      "colaborador_id": "bruna_santana",
+      "faltas": 1,
+      "ja_suspenso": true
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "faltas": 2,
+      "ja_suspenso": true
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "faltas": 1,
+      "ja_suspenso": false
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "faltas": 2,
+      "ja_suspenso": true
+    },
+    {
+      "colaborador_id": "karla",
+      "faltas": 3,
+      "ja_suspenso": true
+    }
+  ],
+  "produtividade": [
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "prazos": 21,
+      "tarefas": 61,
+      "audiencias": 3,
+      "total": 85,
+      "pendentes": 5,
+      "cancelados": 15
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-05",
+      "prazos": 24,
+      "tarefas": 36,
+      "audiencias": 3,
+      "total": 63,
+      "pendentes": 6,
+      "cancelados": 10
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-05",
+      "prazos": 1,
+      "tarefas": 2,
+      "audiencias": 0,
+      "total": 3,
+      "pendentes": 5,
+      "cancelados": 0
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-05",
+      "prazos": 35,
+      "tarefas": 42,
+      "audiencias": 6,
+      "total": 83,
+      "pendentes": 5,
+      "cancelados": 11
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-05",
+      "prazos": 36,
+      "tarefas": 52,
+      "audiencias": 1,
+      "total": 89,
+      "pendentes": 2,
+      "cancelados": 12
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "prazos": 38,
+      "tarefas": 71,
+      "audiencias": 3,
+      "total": 112,
+      "pendentes": 3,
+      "cancelados": 13
+    },
+    {
+      "colaborador_id": "bruna_santana",
+      "mes": "2026-06",
+      "prazos": 41,
+      "tarefas": 41,
+      "audiencias": 1,
+      "total": 83,
+      "pendentes": 4,
+      "cancelados": 8
+    },
+    {
+      "colaborador_id": "bruna_cardoso",
+      "mes": "2026-06",
+      "prazos": 34,
+      "tarefas": 16,
+      "audiencias": 0,
+      "total": 50,
+      "pendentes": 7,
+      "cancelados": 2
+    },
+    {
+      "colaborador_id": "pedro_sandrin",
+      "mes": "2026-06",
+      "prazos": 61,
+      "tarefas": 55,
+      "audiencias": 3,
+      "total": 119,
+      "pendentes": 3,
+      "cancelados": 21
+    },
+    {
+      "colaborador_id": "rhaissa",
+      "mes": "2026-06",
+      "prazos": 44,
+      "tarefas": 57,
+      "audiencias": 2,
+      "total": 103,
+      "pendentes": 4,
+      "cancelados": 16
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-05",
+      "prazos": 16,
+      "tarefas": 86,
+      "audiencias": 2,
+      "total": 104,
+      "pendentes": 6,
+      "cancelados": 7
+    },
+    {
+      "colaborador_id": "karla",
+      "mes": "2026-06",
+      "prazos": 10,
+      "tarefas": 93,
+      "audiencias": 0,
+      "total": 103,
+      "pendentes": 2,
+      "cancelados": 9
+    }
+  ],
+  "kpi_closer": [
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-01",
+      "atendimentos": 135,
+      "fechados": 10,
+      "pagos": 10,
+      "taxa_conversao": 0.1389,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-02",
+      "atendimentos": 119,
+      "fechados": 7,
+      "pagos": 7,
+      "taxa_conversao": 0.1207,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-03",
+      "atendimentos": 165,
+      "fechados": 24,
+      "pagos": 24,
+      "taxa_conversao": 0.2581,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-04",
+      "atendimentos": 127,
+      "fechados": 8,
+      "pagos": 7,
+      "taxa_conversao": 0.1481,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-05",
+      "atendimentos": 130,
+      "fechados": 14,
+      "pagos": 12,
+      "taxa_conversao": 0.2,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-06",
+      "atendimentos": 78,
+      "fechados": 6,
+      "pagos": 5,
+      "taxa_conversao": 0.1224,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-07",
+      "atendimentos": 40,
+      "fechados": 4,
+      "pagos": 2,
+      "taxa_conversao": 0.1379,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-02",
+      "atendimentos": 23,
+      "fechados": 5,
+      "pagos": 5,
+      "taxa_conversao": 0.2632,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "atendimentos": 93,
+      "fechados": 13,
+      "pagos": 13,
+      "taxa_conversao": 0.2097,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "atendimentos": 73,
+      "fechados": 13,
+      "pagos": 13,
+      "taxa_conversao": 0.2241,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "atendimentos": 84,
+      "fechados": 10,
+      "pagos": 8,
+      "taxa_conversao": 0.1961,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "atendimentos": 98,
+      "fechados": 10,
+      "pagos": 8,
+      "taxa_conversao": 0.1176,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-07",
+      "atendimentos": 37,
+      "fechados": 3,
+      "pagos": 1,
+      "taxa_conversao": 0.0833,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-01",
+      "atendimentos": 143,
+      "fechados": 7,
+      "pagos": 7,
+      "taxa_conversao": 0.0959,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-02",
+      "atendimentos": 117,
+      "fechados": 5,
+      "pagos": 5,
+      "taxa_conversao": 0.0806,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-03",
+      "atendimentos": 168,
+      "fechados": 12,
+      "pagos": 11,
+      "taxa_conversao": 0.1348,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-04",
+      "atendimentos": 135,
+      "fechados": 5,
+      "pagos": 5,
+      "taxa_conversao": 0.082,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-05",
+      "atendimentos": 141,
+      "fechados": 7,
+      "pagos": 6,
+      "taxa_conversao": 0.0824,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-06",
+      "atendimentos": 119,
+      "fechados": 7,
+      "pagos": 5,
+      "taxa_conversao": 0.1077,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-07",
+      "atendimentos": 41,
+      "fechados": 0,
+      "pagos": 0,
+      "taxa_conversao": 0,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-05",
+      "atendimentos": 63,
+      "fechados": 7,
+      "pagos": 6,
+      "taxa_conversao": 0.1842,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-06",
+      "atendimentos": 99,
+      "fechados": 9,
+      "pagos": 7,
+      "taxa_conversao": 0.1667,
+      "meta": 0,
+      "atingimento": 0
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-07",
+      "atendimentos": 36,
+      "fechados": 0,
+      "pagos": 0,
+      "taxa_conversao": 0,
+      "meta": 0,
+      "atingimento": 0
+    }
+  ],
+  "metas_closer": {
+    "descricao": "Metas por faixa (Bronze/Prata/Ouro/Master), fixas todo mes. Felipe/Lindsey por quantidade de contratos pagos; Julia por valor R$ dos contratos pagos (fonte: CONTROLE DE COMISSOES JULIA 2026, so ate jun/2026); Pamela sem meta.",
+    "por_closer": {
+      "felipe": {
+        "tipo": "contratos",
+        "metrica": "pagos",
+        "faixas": [
+          {
+            "nome": "Bronze",
+            "min": 12
+          },
+          {
+            "nome": "Prata",
+            "min": 17
+          },
+          {
+            "nome": "Ouro",
+            "min": 25
+          },
+          {
+            "nome": "Master",
+            "min": 35
+          }
+        ]
+      },
+      "lindsey": {
+        "tipo": "contratos",
+        "metrica": "pagos",
+        "faixas": [
+          {
+            "nome": "Bronze",
+            "min": 12
+          },
+          {
+            "nome": "Prata",
+            "min": 17
+          },
+          {
+            "nome": "Ouro",
+            "min": 25
+          },
+          {
+            "nome": "Master",
+            "min": 35
+          }
+        ]
+      },
+      "julia_folkis": {
+        "tipo": "reais",
+        "metrica": "valor_contratos",
+        "faixas": [
+          {
+            "nome": "Bronze",
+            "min": 20000
+          },
+          {
+            "nome": "Prata",
+            "min": 50000
+          },
+          {
+            "nome": "Ouro",
+            "min": 80000
+          },
+          {
+            "nome": "Master",
+            "min": 150000
+          }
+        ]
+      },
+      "pamela": {
+        "tipo": null,
+        "obs": "Sem meta definida (contratada recente)."
+      }
+    }
+  },
+  "valor_contratos": [
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-02",
+      "valor": 1958.7,
+      "qtd_contratos": 1
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "valor": 27366.9,
+      "qtd_contratos": 6
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "valor": 24140,
+      "qtd_contratos": 9
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "valor": 20938.5,
+      "qtd_contratos": 9
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "valor": 44819.5,
+      "qtd_contratos": 9
+    }
+  ],
+  "socias": [
+    {
+      "id": "emilia",
+      "nome": "Dra. Emília Pelegrini Garbuio",
+      "data_nascimento": "0000-07-02",
+      "papel": "Sócia",
+      "remuneracao": [
+        {
+          "mes": "2026-01",
+          "prolabore": 0,
+          "exito": 3165.29,
+          "total": 3165.29
+        },
+        {
+          "mes": "2026-02",
+          "prolabore": 0,
+          "exito": 2239.77,
+          "total": 2239.77
+        },
+        {
+          "mes": "2026-03",
+          "prolabore": 0,
+          "exito": 1611.81,
+          "total": 1611.81
+        },
+        {
+          "mes": "2026-04",
+          "prolabore": 0,
+          "exito": 11537.02,
+          "total": 11537.02
+        },
+        {
+          "mes": "2026-05",
+          "prolabore": 0,
+          "exito": 2441.8,
+          "total": 2441.8
+        },
+        {
+          "mes": "2026-06",
+          "prolabore": 21000,
+          "exito": 0,
+          "total": 21000
+        },
+        {
+          "mes": "2026-07",
+          "prolabore": 21000,
+          "exito": 1159.07,
+          "total": 22159.07
+        }
+      ]
+    },
+    {
+      "id": "amanda",
+      "nome": "Dra. Amanda Thereza Lenci Paccola",
+      "data_nascimento": "0000-12-10",
+      "papel": "Sócia",
+      "remuneracao": [
+        {
+          "mes": "2026-01",
+          "prolabore": 0,
+          "exito": 3165.29,
+          "total": 3165.29
+        },
+        {
+          "mes": "2026-02",
+          "prolabore": 0,
+          "exito": 2239.77,
+          "total": 2239.77
+        },
+        {
+          "mes": "2026-03",
+          "prolabore": 0,
+          "exito": 1611.81,
+          "total": 1611.81
+        },
+        {
+          "mes": "2026-04",
+          "prolabore": 0,
+          "exito": 11537.02,
+          "total": 11537.02
+        },
+        {
+          "mes": "2026-05",
+          "prolabore": 0,
+          "exito": 2441.8,
+          "total": 2441.8
+        },
+        {
+          "mes": "2026-06",
+          "prolabore": 21000,
+          "exito": 0,
+          "total": 21000
+        },
+        {
+          "mes": "2026-07",
+          "prolabore": 21000,
+          "exito": 1159.07,
+          "total": 22159.07
+        }
+      ]
+    }
+  ],
+  "avaliacoes": {
+    "quesitos": [
+      "Entrega",
+      "Qualidade",
+      "Organização",
+      "Colaboração",
+      "Relacionamento",
+      "Desempenho"
+    ],
+    "escala": "0 = não sabe opinar (excluído) · 1 = abaixo do esperado · 2 = dentro do esperado · 3 = acima do esperado",
+    "metodologia": "Avaliação por pares (360°): cada colaborador é avaliado pelos outros 5 do time (operacional), de 0 a 3 em 6 quesitos. A nota 0 ('não sei opinar') é excluída da média. Média Geral = média dos 6 quesitos.",
+    "ciclos": [
+      {
+        "id": "2026-03",
+        "label": "Março 2026",
+        "respostas": 30,
+        "leitura": "Time bem avaliado no geral (médias entre 2,6 e 2,9). Karla e Julia lideram (2,93). Tema transversal para as reuniões: atrito entre Pedro e Julia (citado por ambos e pela Karla). Nátally e Pedro têm as menores médias, mas ambos em evolução clara após a última reunião individual (Karla). Insegurança (Rhaíssa, Pedro) e organização/tempo de entrega (Nátally, Pedro) são recorrentes.",
+        "pessoas": [
+          {
+            "nome": "Karla Leite",
+            "colaborador_id": "karla",
+            "notas": [
+              3,
+              2.8,
+              2.8,
+              3,
+              3,
+              3
+            ],
+            "geral": 2.93,
+            "obs": "",
+            "fortes": [
+              "Entrega alta e com qualidade; extremamente resolutiva e ajuda muito o time no dia a dia (Pedro).",
+              "Organizada, prestativa e empenhada; paciência para explicar e disposição para ajudar (Julia, Bruna).",
+              "Experiência e proatividade — sempre disponível para auxiliar em situações complexas (Rhaíssa).",
+              "Perfil de liderança reconhecido, no coletivo e no individual (Nátally, Pedro: 'ótima líder')."
+            ],
+            "destaques": [
+              "Caso José Wilson (GPX) — excelente resultado para o escritório (Rhaíssa).",
+              "Apoio técnico na planilha de SEND da Renata, destravando dúvida sobre rendas/afastamento do INSS (Bruna)."
+            ],
+            "atencao": [
+              "Tempo de resposta às vezes demora (Rhaíssa) — não é constante.",
+              "Alguns clientes deixam de ser avisados de decisões recentes (Julia) — o que levou Julia a avaliar Qualidade/Organização como 2."
+            ]
+          },
+          {
+            "nome": "Julia Folkis",
+            "colaborador_id": "julia_folkis",
+            "notas": [
+              3,
+              3,
+              3,
+              3,
+              2.6,
+              3
+            ],
+            "geral": 2.93,
+            "obs": "Empatada em 1º com a Karla (2,93).",
+            "fortes": [
+              "Qualidade na entrega e dom para negociações; ótima profissional em crescimento constante (Pedro).",
+              "Boa capacidade técnica e atenção aos detalhes; proativa e com vontade de aprender (Bruna).",
+              "Muito colaborativa — participa das reuniões, tira dúvidas e traz sugestões (Karla).",
+              "Raciocínio ágil, sabe se posicionar, comprometida e responsável (Rhaíssa)."
+            ],
+            "destaques": [
+              "Passou a atuar também no comercial: número significativo de contratos fechados no onboarding — 'profissional completa' (Karla).",
+              "Decisões positivas de RCPCC e críticas construtivas que geraram mudanças no escritório (Nátally)."
+            ],
+            "atencao": [
+              "Relacionamento (2,60) é o menor quesito: atrito com o Pedro — Pedro deu nota 1 e citou 'tivemos nossos desentendimentos'; Nátally menciona que a personalidade forte às vezes aflora (ressaltando que Julia agiu com profissionalismo)."
+            ]
+          },
+          {
+            "nome": "Rhaíssa C. L. Oliveira",
+            "colaborador_id": "rhaissa",
+            "notas": [
+              3,
+              2.6,
+              2.8,
+              3,
+              3,
+              2.6
+            ],
+            "geral": 2.83,
+            "obs": "",
+            "fortes": [
+              "Realiza prazos e tarefas com qualidade e comprometimento, com bons resultados (Pedro).",
+              "Esforçada, dedicada e proativa — sempre com ideias novas para a equipe (Julia, Bruna).",
+              "Organização: mantém prazos, documentos e tarefas sob controle (Karla).",
+              "Busca melhorar a qualidade das peças; os modelos dela são usados pelos colegas (Nátally)."
+            ],
+            "destaques": [
+              "Ideia da declaração de despesas fixas para clientes de SEND, agilizando as ações (Bruna).",
+              "Liminares de SEND deferidas — inclusive uma em SP, o que é raro (Karla).",
+              "Vem inovando/ajustando as estratégias das iniciais de SEND (Nátally)."
+            ],
+            "atencao": [
+              "Insegurança recorrente: quando ocorre um erro, fica muito receosa em relação ao próprio trabalho (Julia, Karla).",
+              "Análise processual (Karla): casos DBA e REsp da Débora — o que levou Karla a dar 2 em Qualidade e Desempenho."
+            ]
+          },
+          {
+            "nome": "Bruna S. de Andrade",
+            "colaborador_id": "bruna_santana",
+            "notas": [
+              2.8,
+              3,
+              2.8,
+              2.8,
+              2.8,
+              2.8
+            ],
+            "geral": 2.83,
+            "obs": "Entrou na equipe recentemente (nova neste ciclo).",
+            "fortes": [
+              "Muito profissional e resolutiva; facilidade com casos complexos e grande conhecimento jurídico (Pedro).",
+              "'Super desenrolada' — resolve rápido, pesquisa bem e acrescenta ideias aos modelos (Karla).",
+              "Comprometida e detalhista, com bagagem em áreas distintas (família, militar/trabalhista) (Julia).",
+              "Aprende rápido, prestativa e disciplinada (Rhaíssa, Nátally)."
+            ],
+            "destaques": [
+              "Agravo de instrumento da Márcia Melo (impenhorabilidade de bem de família): tribunal anulou a decisão que rejeitava a exceção de pré-executividade (Karla).",
+              "Apoio em reuniões da área de família e em caso militar/trabalhista (Julia)."
+            ],
+            "atencao": [
+              "Caso Rosimara: protocolo do recurso especial no processo errado, levando ao encerramento (Karla).",
+              "Julia deu notas um pouco menores, ressalvando 'não tive muito contato com o trabalho da Bruna'."
+            ]
+          },
+          {
+            "nome": "Pedro Sandrin",
+            "colaborador_id": "pedro_sandrin",
+            "notas": [
+              3,
+              3,
+              2.6,
+              2.6,
+              2.4,
+              2.6
+            ],
+            "geral": 2.7,
+            "obs": "",
+            "fortes": [
+              "Tecnicamente muito bom, com amplo domínio de processo e dos assuntos do escritório (Karla, Rhaíssa).",
+              "Qualidade nas peças e busca melhorar os pontos apontados (Julia).",
+              "Comprometido, organizado no dia a dia e prestativo — compartilha modelos e esclarece dúvidas (Bruna).",
+              "Analítico e interessado na entrega (Nátally); perfeccionista (Rhaíssa)."
+            ],
+            "destaques": [
+              "Recurso que resultou na extinção da busca e apreensão do Eduardo Paganini (Karla).",
+              "Decisões importantes de GPX, SEND e AERO; caso DBA extinto (Rhaíssa, Nátally).",
+              "Método de organizar fatos/e-mails em audiência de conciliação de SEND, adotado pela Bruna."
+            ],
+            "atencao": [
+              "Relacionamento (2,40, o menor): atrito com a Julia — não gosta que ela revise seus prazos (Karla, Julia).",
+              "Ausência em reunião semanal gerou incerteza na equipe (Julia, Karla).",
+              "Organização/priorização e procrastinar atividades de que não gosta (Karla); demora no retorno a clientes no Kommo (Rhaíssa); conversas paralelas (Nátally).",
+              "Insegurança. Ponto positivo: Karla nota melhora clara após a última reunião individual."
+            ]
+          },
+          {
+            "nome": "Nátally",
+            "colaborador_id": null,
+            "notas": [
+              2.8,
+              2.6,
+              2.4,
+              2.6,
+              3,
+              2.4
+            ],
+            "geral": 2.63,
+            "obs": "Ex-colaboradora (saiu depois deste ciclo). Menor média do ciclo, mas com trajetória de recuperação reconhecida.",
+            "fortes": [
+              "Muito resolutiva — resolve vários problemas de uma vez sem perder qualidade (Pedro).",
+              "Evoluiu bastante desde que chegou; lida com demandas administrativas e jurídicas sem auxílio (Julia).",
+              "Responsabilidade e comprometimento com prazos e com a equipe (Bruna, Rhaíssa).",
+              "Grande potencial e capacidade técnica; ajusta rápido com feedback (Karla)."
+            ],
+            "destaques": [
+              "Iniciais de AERO muito boas — destaque para a inicial da Vitória Monfre (Pedro).",
+              "Boa condução do caso Jhonny Mageto (Bruna).",
+              "Liminares positivas: SEND do Leonardo Corrêa e RCV da Vitória Lemes (Karla)."
+            ],
+            "atencao": [
+              "Tempo de entrega e organização das tarefas/prazos — entregas às vezes mais longas (Rhaíssa, Julia).",
+              "Queda na qualidade nos últimos meses, atrasos e necessidade de repetir orientações (Karla) — vários quesitos avaliados como 2.",
+              "Ponto muito positivo: após a última reunião individual, os erros deixaram de ocorrer e 'tudo voltou a caminhar bem' (Karla)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2026-07",
+        "label": "Julho 2026",
+        "respostas": 30,
+        "leitura": "Todo o time bem avaliado. Rhaíssa, Karla e Julia lideram com médias próximas do teto (≈3,0). Pedro e Bruna S. de Andrade têm como principal ponto de atenção a organização da rotina quando o volume aumenta. Bruna Pelizardo é recém-chegada — parte dos colegas ainda não conhecia o trabalho dela (várias notas 'não sei opinar').",
+        "pessoas": [
+          {
+            "nome": "Rhaíssa C. L. Oliveira",
+            "colaborador_id": "rhaissa",
+            "notas": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ],
+            "geral": 3,
+            "obs": "Única colaboradora com 3,00 em todos os quesitos, avaliada pelos 5 colegas.",
+            "fortes": [
+              "Proatividade e iniciativa; contribui constantemente com ideias e sugestões que agregam ao time.",
+              "Vontade de evoluir — busca aprender e entregar um trabalho cada vez melhor.",
+              "Inteligente e criativa; vem melhorando as petições e desenvolvendo teses.",
+              "Organizada e esforçada; tomou a frente na criação de tópicos-modelo para as peças."
+            ],
+            "destaques": [
+              "Criou o 1º modelo de inicial de SEND com a nova calculadora do Claude (padronização da equipe).",
+              "Liminar deferida em processo de RMC — resultado reconhecidamente difícil.",
+              "Reformulou a inicial de SEND e criou tópico para o recurso de apelação."
+            ],
+            "atencao": [
+              "Insegurança em algumas tomadas de decisão: busca confirmação antes de decidir, às vezes em pontos básicos (Karla, Julia). Caminho: ganhar confiança e autonomia."
+            ]
+          },
+          {
+            "nome": "Karla Leite",
+            "colaborador_id": "karla",
+            "notas": [
+              3,
+              3,
+              2.8,
+              3,
+              3,
+              3
+            ],
+            "geral": 2.97,
+            "obs": "",
+            "fortes": [
+              "Forte conhecimento técnico e experiência; transmite segurança.",
+              "Perfil de liderança ('ótima líder'); extremamente colaborativa e paciente para ensinar e debater.",
+              "Comprometida e organizada — conduziu bem o time mesmo com o aumento de iniciais, clientes e prazos.",
+              "Vista como 'essencial para o escritório' por vários colegas."
+            ],
+            "destaques": [
+              "Referência de apoio da equipe no dia a dia; onboarding das colaboradoras novas conduzido com paciência."
+            ],
+            "atencao": [
+              "Tempo de resposta aumentou no último trimestre (Rhaíssa) — atribuído ao volume; sem prejuízo prático.",
+              "Agendou a audiência do cliente Marcel no dia errado, resultando na extinção da ação; e, esporadicamente, algum cliente deixa de ser avisado de um andamento (Julia)."
+            ]
+          },
+          {
+            "nome": "Julia Folkis",
+            "colaborador_id": "julia_folkis",
+            "notas": [
+              3,
+              3,
+              2.8,
+              3,
+              2.8,
+              3
+            ],
+            "geral": 2.93,
+            "obs": "",
+            "fortes": [
+              "Eficiência: atua em comercial, operacional e acordos, conciliando as frentes com organização e qualidade.",
+              "Dedicada, responsável, proativa e participativa nas reuniões; artigos mensais ganham destaque.",
+              "'Veste a camisa' e é sempre solutiva; parceira no dia a dia."
+            ],
+            "destaques": [
+              "Caso Camila Breda: na ação revisional conseguiu a procedência dos pedidos e a condenação do banco em danos morais."
+            ],
+            "atencao": [
+              "Tende a assumir muitas tarefas ao mesmo tempo, o que às vezes gera sobrecarga e dificulta a organização (Rhaíssa). Nenhum evento negativo apontado."
+            ]
+          },
+          {
+            "nome": "Bruna Pelizardo Cardoso",
+            "colaborador_id": "bruna_cardoso",
+            "notas": [
+              2.33,
+              3,
+              2.5,
+              2.6,
+              2.67,
+              2.67
+            ],
+            "geral": 2.63,
+            "obs": "Recém-chegada: 2 colegas lançaram 'não sei opinar' na maioria dos quesitos; média baseada em poucos avaliadores (2–3) — referência inicial.",
+            "fortes": [
+              "Grande experiência e bagagem; conhecimento processual que agrega ao time (Karla).",
+              "Ideias valiosas em SEND: fundamentação do mínimo existencial e inclusão do custo de vida da cidade do cliente (citada por 3 colegas).",
+              "Disposta a ajudar; sugestões em caso de penhora de imóvel ajudaram o Pedro."
+            ],
+            "destaques": [
+              "Reestruturou a inicial de RMC, deixando a peça mais clara, objetiva e bem organizada (Karla)."
+            ],
+            "atencao": [
+              "Organização da rotina e atenção aos feedbacks: atividades reagendadas e correções que voltam com os mesmos erros (Karla).",
+              "Julia percebe que às vezes 'fica no raso' (ressalvando pouco contato).",
+              "Ela própria menciona dificuldade em absorver o método do escritório — sugere reforçar o onboarding."
+            ]
+          },
+          {
+            "nome": "Pedro Sandrin",
+            "colaborador_id": "pedro_sandrin",
+            "notas": [
+              2.6,
+              2.75,
+              2.67,
+              2.2,
+              2.4,
+              2.75
+            ],
+            "geral": 2.56,
+            "obs": "Alguns quesitos calculados sobre 3–4 avaliadores (houve 'não sei opinar').",
+            "fortes": [
+              "Advogado inteligente e com muito conhecimento nos processos; já atua com autonomia.",
+              "Disposto a compartilhar conhecimento e esclarecer dúvidas, sobretudo em GPX e AERO; prático e objetivo.",
+              "'Sempre traz ótimas decisões' para o escritório."
+            ],
+            "destaques": [
+              "Liminar de RMC deferida — possivelmente a 1ª do escritório nesse tipo de ação."
+            ],
+            "atencao": [
+              "Organização é o principal ponto (menor nota do quesito no time): acumula tarefas e conversas no Kommo; deixa para depois o que não gosta (Rhaíssa, Karla).",
+              "Pouca participação nas reuniões semanais (Karla).",
+              "Pouca proatividade; por vezes tenta repassar trabalhos seus a outra pessoa (Julia)."
+            ]
+          },
+          {
+            "nome": "Bruna S. de Andrade",
+            "colaborador_id": "bruna_santana",
+            "notas": [
+              2.5,
+              2.75,
+              2.25,
+              2.6,
+              2.4,
+              2.6
+            ],
+            "geral": 2.52,
+            "obs": "Notas mais baixas vieram, em parte, de colegas que declararam não acompanhar de perto o trabalho dela.",
+            "fortes": [
+              "Comprometimento — 'veste a camisa', é responsável e confiável; entrega com cuidado e qualidade (Karla).",
+              "Experiente; contribui nas reuniões e debates e ajuda a achar soluções; solícita e objetiva.",
+              "Detalhista e com boa bagagem sobre a advocacia."
+            ],
+            "destaques": [
+              "Liminar de SEND no TJTO — 1ª decisão favorável do escritório naquele estado."
+            ],
+            "atencao": [
+              "Organização da rotina quando o volume aumenta → iniciais demoram mais a sair (Karla, Rhaíssa); o detalhismo às vezes atrasa (Julia).",
+              "Caso Rosimara: recurso especial protocolado no processo errado, levando ao trânsito em julgado (Karla)."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "pagos_crm": [
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-01",
+      "qtd": 9,
+      "valor": 60692
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-02",
+      "qtd": 3,
+      "valor": 22692
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-03",
+      "qtd": 13,
+      "valor": 85604
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-04",
+      "qtd": 13,
+      "valor": 79445
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-05",
+      "qtd": 12,
+      "valor": 73038.24
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-06",
+      "qtd": 13,
+      "valor": 80383.96
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-07",
+      "qtd": 2,
+      "valor": 11928
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-01",
+      "qtd": 9,
+      "valor": 58991.76
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-02",
+      "qtd": 3,
+      "valor": 12128
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-03",
+      "qtd": 6,
+      "valor": 35979.68
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-04",
+      "qtd": 12,
+      "valor": 84768
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-05",
+      "qtd": 6,
+      "valor": 37259.72
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-06",
+      "qtd": 7,
+      "valor": 46187.16
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-07",
+      "qtd": 1,
+      "valor": 2800
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "qtd": 6,
+      "valor": 24366.84
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "qtd": 8,
+      "valor": 15840
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "qtd": 13,
+      "valor": 30989.4
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "qtd": 10,
+      "valor": 40903.15
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-07",
+      "qtd": 4,
+      "valor": 32999.93
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-06",
+      "qtd": 1,
+      "valor": 5964
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-07",
+      "qtd": 5,
+      "valor": 36418.32
+    }
+  ],
+  "entrada_crm": [
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-01",
+      "entrada": 1850,
+      "qtd": 9
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-02",
+      "entrada": 1891,
+      "qtd": 3
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-03",
+      "entrada": 6484,
+      "qtd": 13
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-04",
+      "entrada": 8935.25,
+      "qtd": 13
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-05",
+      "entrada": 5476,
+      "qtd": 12
+    },
+    {
+      "colaborador_id": "felipe",
+      "mes": "2026-06",
+      "entrada": 6191.16,
+      "qtd": 13
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-01",
+      "entrada": 2346.99,
+      "qtd": 8
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-02",
+      "entrada": 1069.75,
+      "qtd": 3
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-03",
+      "entrada": 2770.73,
+      "qtd": 6
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-04",
+      "entrada": 6442,
+      "qtd": 12
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-05",
+      "entrada": 2835.85,
+      "qtd": 5
+    },
+    {
+      "colaborador_id": "lindsey",
+      "mes": "2026-06",
+      "entrada": 3848.93,
+      "qtd": 7
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-03",
+      "entrada": 11225.56,
+      "qtd": 6
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-04",
+      "entrada": 3110.66,
+      "qtd": 9
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-05",
+      "entrada": 3485.18,
+      "qtd": 11
+    },
+    {
+      "colaborador_id": "julia_folkis",
+      "mes": "2026-06",
+      "entrada": 7449.43,
+      "qtd": 9
+    },
+    {
+      "colaborador_id": "pamela",
+      "mes": "2026-06",
+      "entrada": 497,
+      "qtd": 1
+    }
+  ]
+}
+</script>
+
+<script>
+/* ============ Carga de dados: tenta dados_rh.json, senão usa o embutido ============ */
+let DADOS = null;
+async function carregar(){
+  if(!PUBLICO){
+    try{
+      const r = await fetch('dados_rh.json',{cache:'no-store'});
+      if(r.ok){ DADOS = await r.json(); return 'arquivo'; }
+    }catch(e){}
+  }
+  DADOS = JSON.parse(document.getElementById('fallback-data').textContent);
+  return 'embutido';
+}
+
+/* ============ Utilitários ============ */
+const MESES_PT=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MESES_LONGO=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const HOJE = new Date();
+let desbloqueado=false;
+let temSensiveis=true;
+let tela='visao';
+let filtro={time:'Todos',cargo:'Todos',mes:'',pessoa:'Todos'};
+
+const fmtBRL=v=>'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtPct=v=>((v||0)*100).toFixed(1).replace('.',',')+'%';
+const mesLabel=m=>{if(!m)return '—';const[a,mm]=m.split('-');return MESES_PT[+mm]+'/'+a.slice(2);};
+const mesLongo=m=>{if(!m)return '—';const[a,mm]=m.split('-');return MESES_LONGO[+mm]+' de '+a;};
+const fmtNasc=iso=>{if(!iso)return '';const[a,m,d]=iso.split('-');return a==='0000'?d+'/'+m:d+'/'+m+'/'+a;};
+const nfEsperada=(c,mes)=>!!c&&c.tipo_vinculo==='PJ'&&(!c.nf_desde||mes>=c.nf_desde);
+const fmtDate=dt=>String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();
+function proxReajuste(c){if(!c.data_base_reajuste)return null;const b=parseISO(c.data_base_reajuste);if(!b)return null;const p=new Date(b.getFullYear()+1,b.getMonth(),b.getDate());while(p<HOJE)p.setFullYear(p.getFullYear()+1);return p;}
+const parseISO=s=>{if(!s)return null;const[a,m,d]=s.split('-').map(Number);return new Date(a,m-1,d);};
+const parseBR=s=>{if(!s)return null;const p=s.trim().split('/');if(p.length!==3)return null;return new Date(+p[2],+p[1]-1,+p[0]);};
+const diasEntre=(a,b)=>Math.round((b-a)/86400000);
+function tempoDeCasa(iso){const d=parseISO(iso);if(!d)return null;const dias=diasEntre(d,HOJE);const anos=Math.floor(dias/365);const meses=Math.floor((dias%365)/30);return {dias,anos,meses};}
+function tempoTexto(t){if(!t)return '—';if(t.anos>=1)return t.anos+(t.anos>1?' anos':' ano')+(t.meses?(' e '+t.meses+'m'):'');return t.meses+' meses';}
+const timeClass=t=>t==='Comercial'?'com':t==='Operacional'?'ope':'adm';
+const el=(h)=>{const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;};
+
+function colab(id){return DADOS.colaboradores.find(c=>c.id===id);}
+function nomeCurto(id){const c=colab(id);if(!c)return id;const p=c.nome.split(' ');return p[0]+(p[1]?' '+p[1]:'');}
+function iniciais(nome){const p=nome.split(' ').filter(Boolean);return (p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
+function corTime(c){return c.time_principal==='Comercial'?'var(--com)':c.time_principal==='Operacional'?'var(--ope)':'var(--adm)';}
+
+/* pertence ao time (considera papel secundário: Julia = Operacional + Comercial) */
+function noTime(c,t){return t==='Todos'||c.time_principal===t||c.papel_secundario===t;}
+function passaFiltroPessoa(c){
+  if(!noTime(c,filtro.time))return false;
+  if(filtro.cargo!=='Todos'&&c.cargo!==filtro.cargo)return false;
+  if(filtro.pessoa!=='Todos'&&c.id!==filtro.pessoa)return false;
+  return true;
+}
+function mesesComDados(){
+  const s=new Set();
+  ['remuneracao','notas_fiscais','produtividade','kpi_closer'].forEach(k=>DADOS[k].forEach(r=>s.add(r.mes)));
+  return [...s].sort();
+}
+
+/* ============ Máscara de dados sensíveis ============ */
+function sens(valorHtml){return valorHtml;} /* senha removida — remuneração à mostra na versão da gestão */
+function remunMes(cid,mes){return (DADOS.remuneracao||[]).find(r=>r.colaborador_id===cid&&r.mes===mes);}
+function remunUlt(cid){const rs=(DADOS.remuneracao||[]).filter(r=>r.colaborador_id===cid).sort((a,b)=>a.mes.localeCompare(b.mes));return rs[rs.length-1];}
+function remunFmt(r,modo){
+  if(!r)return '<span class="muted">—</span>';
+  if(modo==='comercial'){const cf=r.comercial_fixo||0,cc=r.comercial!=null?r.comercial:0;const p=[];if(cf)p.push('Fixo '+fmtBRL(cf));p.push('Comissão '+fmtBRL(cc));return sens(p.join(' · '));}
+  if(modo==='operacional'){
+    const fixa=r.fixa!=null?r.fixa:(r.salario_base||0), acor=r.acordos||0;
+    const p=['Fixo '+fmtBRL(fixa)];if(acor)p.push('Acordos/sucumb. '+fmtBRL(acor));if(r.bonus)p.push('Bônus '+fmtBRL(r.bonus));
+    return sens('<b>'+fmtBRL(fixa+acor+(r.bonus||0))+'</b> <span class="muted" style="font-size:11px">'+p.join(' · ')+'</span>');
+  }
+  const p=['Sal. '+fmtBRL(r.salario_base||0)];if(r.comissao)p.push('Com. '+fmtBRL(r.comissao));if(r.bonus)p.push('Bônus '+fmtBRL(r.bonus));
+  return sens('<b>'+fmtBRL(r.total)+'</b> <span class="muted" style="font-size:11px">'+p.join(' · ')+'</span>');
+}
+function cardRemun(titulo,itens,mes){
+  if(!(DADOS.remuneracao&&DADOS.remuneracao.length))return '';
+  const linhas=itens.map(it=>{const c=colab(it.cid);return `<tr><td>${c?c.nome:it.cid}</td><td>${remunFmt(remunMes(it.cid,mes),it.modo)}</td></tr>`;}).join('');
+  return `<div class="card" style="margin-bottom:16px"><h3>${titulo}</h3><div class="scroll"><table><thead><tr><th>Pessoa</th><th>Remuneração · ${mesLabel(mes)}</th></tr></thead><tbody>${linhas}</tbody></table></div><div class="muted" style="font-size:11px;margin-top:6px">Fonte: Financeiro RH · ${desbloqueado?'visível':'clique em “Dados restritos” para ver'}. Não vai para o link público.</div></div>`;
+}
+
+/* ============ Gráficos SVG (sem dependências) ============ */
+function barrasH(itens,opt={}){ // itens: [{label,value,color,sub}]
+  const max=opt.max||Math.max(1,...itens.map(i=>i.value));
+  return '<div>'+itens.map(i=>{
+    const w=Math.max(2,(i.value/max)*100);
+    return `<div class="barrow"><div class="muted" title="${i.label}">${i.label}</div>
+      <div class="bartrack"><div class="barfill" style="width:${w}%;background:${i.color||'var(--accent)'}"></div></div>
+      <div class="num" style="text-align:right">${opt.fmt?opt.fmt(i.value):i.value}${i.sub?`<div class="muted" style="font-size:10px">${i.sub}</div>`:''}</div></div>`;
+  }).join('')+'</div>';
+}
+function grupoBarras(series,cats,opt={}){ // series:[{name,color,data:[..]}], cats:[labels]
+  const W=Math.max(360,cats.length*(series.length*14+26)+50),H=opt.h||210,pad=30,base=H-24,top=14;
+  const max=opt.max||Math.max(1,...series.flatMap(s=>s.data));
+  const gw=(W-pad-10)/cats.length, bw=Math.min(20,(gw-10)/series.length);
+  let bars='';
+  cats.forEach((c,ci)=>{
+    const gx=pad+ci*gw;
+    series.forEach((s,si)=>{
+      const v=s.data[ci]||0;const h=(v/max)*(base-top);
+      const x=gx+8+si*(bw+2);
+      bars+=`<rect x="${x.toFixed(1)}" y="${(base-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="2" fill="${s.color}"><title>${s.name} · ${c}: ${v}</title></rect>`;
+      if(opt.vals&&v)bars+=`<text x="${(x+bw/2).toFixed(1)}" y="${(base-h-3).toFixed(1)}" font-size="9" fill="var(--muted)" text-anchor="middle">${v}</text>`;
+    });
+    bars+=`<text x="${(gx+gw/2).toFixed(1)}" y="${H-8}" font-size="10" fill="var(--muted)" text-anchor="middle">${c}</text>`;
+  });
+  // grid lines
+  let grid='';for(let g=0;g<=2;g++){const y=top+(base-top)*g/2;const val=Math.round(max*(1-g/2));grid+=`<line x1="${pad}" y1="${y}" x2="${W-6}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="4" y="${y+3}" font-size="9" fill="var(--muted2)">${val}</text>`;}
+  const leg=series.map(s=>`<span style="display:inline-flex;align-items:center;gap:5px"><span class="dot" style="background:${s.color}"></span>${s.name}</span>`).join(' ');
+  return `<div class="legend">${leg}</div><div class="scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;min-width:${Math.min(W,520)}px">${grid}${bars}</svg></div>`;
+}
+function linhas(series,cats,opt={}){ // series:[{name,color,data}]
+  const W=Math.max(420,cats.length*70+60),H=opt.h||210,padL=34,padR=12,base=H-24,top=12;
+  const max=opt.max||Math.max(1,...series.flatMap(s=>s.data.filter(v=>v!=null)));
+  const xw=(W-padL-padR)/Math.max(1,cats.length-1);
+  const xy=(ci,v)=>[padL+ci*xw, base-(v/max)*(base-top)];
+  let paths='';
+  series.forEach(s=>{
+    let d='';s.data.forEach((v,ci)=>{if(v==null)return;const[x,y]=xy(ci,v);d+=(d?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';});
+    paths+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    s.data.forEach((v,ci)=>{if(v==null)return;const[x,y]=xy(ci,v);paths+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${s.color}"><title>${s.name} · ${cats[ci]}: ${v}</title></circle>`;});
+  });
+  let grid='';for(let g=0;g<=2;g++){const y=top+(base-top)*g/2;const val=Math.round(max*(1-g/2));grid+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="4" y="${y+3}" font-size="9" fill="var(--muted2)">${val}</text>`;}
+  let xlab='';cats.forEach((c,ci)=>{const[x]=xy(ci,0);xlab+=`<text x="${x.toFixed(1)}" y="${H-8}" font-size="10" fill="var(--muted)" text-anchor="middle">${c}</text>`;});
+  const leg=series.map(s=>`<span style="display:inline-flex;align-items:center;gap:5px"><span class="dot" style="background:${s.color}"></span>${s.name}</span>`).join(' ');
+  return `<div class="legend">${leg}</div><div class="scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;min-width:${Math.min(W,520)}px">${grid}${paths}${xlab}</svg></div>`;
+}
+
+/* ============ NAV ============ */
+const ICONS={
+ visao:'<path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7" rx="1"/><rect x="12" y="6" width="3" height="11" rx="1"/><rect x="17" y="13" width="3" height="4" rx="1"/>',
+ fichas:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2.3"/><path d="M5.3 16.5c.7-1.8 2.2-2.7 3.7-2.7s3 .9 3.7 2.7"/><path d="M15 9h4M15 13h4"/>',
+ nf:'<path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/>',
+ contratos:'<path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/><path d="M8.5 15l2 2 4-4"/>',
+ ferias:'<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 12v8"/><path d="M12 3c-2.5 1.8-2.5 5.5-2.5 9M12 3c2.5 1.8 2.5 5.5 2.5 9"/>',
+ aniversarios:'<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M4 13.5h16"/><path d="M12 9V6"/><path d="M9.5 6a1.3 1.3 0 1 1 2.5 0 1.3 1.3 0 1 1 2.5 0"/>',
+ comercial:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5.5A2 2 0 0 1 10 3.5h4a2 2 0 0 1 2 2V7"/><path d="M3 12.5h18"/>',
+ produtividade:'<path d="M12 3v18"/><path d="M5 6.5h14"/><path d="M7 6.5l-3 6a3 3 0 0 0 6 0z"/><path d="M17 6.5l3 6a3 3 0 0 1-6 0z"/>',
+ avaliacoes:'<path d="M12 3.2l2.5 5.1 5.6.8-4.05 3.95.96 5.6L12 16.9l-5.01 2.65.96-5.6L3.9 9.1l5.6-.8z"/>',
+ lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ unlock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/>',
+ alert:'<path d="M12 3.5l9 15.5H3z"/><path d="M12 10v4M12 16.5h.01"/>',
+ bell:'<path d="M18 8.5a6 6 0 0 0-12 0c0 6-3 8-3 8h18s-3-2-3-8"/><path d="M10 20.5a2 2 0 0 0 4 0"/>'
+};
+function ic(name,sz){const p=ICONS[name]||'';return `<svg viewBox="0 0 24 24" width="${sz||18}" height="${sz||18}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex:0 0 auto">${p}</svg>`;}
+const TELAS=[
+  {id:'visao',ic:'visao',t:'Visão geral'},
+  {id:'fichas',ic:'fichas',t:'Fichas individuais'},
+  {id:'nf',ic:'nf',t:'Notas fiscais'},
+  {id:'contratos',ic:'contratos',t:'Contratos & renovações'},
+  {id:'ferias',ic:'ferias',t:'Férias'},
+  {id:'aniversarios',ic:'aniversarios',t:'Aniversários & tempo de casa'},
+  {id:'comercial',ic:'comercial',t:'Comercial / Closers'},
+  {id:'produtividade',ic:'produtividade',t:'Produtividade operacional'},
+  {id:'avaliacoes',ic:'avaliacoes',t:'Avaliações'},
+];
+function pintarNav(){
+  document.getElementById('nav').innerHTML=TELAS.filter(s=>s.id!=='avaliacoes'||(DADOS.avaliacoes&&DADOS.avaliacoes.ciclos&&DADOS.avaliacoes.ciclos.length)).map(s=>
+    `<button class="${s.id===tela?'active':''}" data-tela="${s.id}"><span class="ic">${ic(s.ic)}</span>${s.t}</button>`).join('');
+  document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{tela=b.dataset.tela;render();});
+}
+
+/* ============ Filtros ============ */
+function pintarFiltros(){
+  const times=['Todos','Comercial','Operacional','Administrativo'];
+  const cargos=['Todos',...new Set(DADOS.colaboradores.map(c=>c.cargo))];
+  const meses=mesesComDados();
+  if(!filtro.mes)filtro.mes=meses[meses.length-1];
+  const opt=(arr,cur,fmt)=>arr.map(v=>`<option value="${v}" ${v===cur?'selected':''}>${fmt?fmt(v):v}</option>`).join('');
+  document.getElementById('fTime').innerHTML=opt(times,filtro.time);
+  document.getElementById('fCargo').innerHTML=opt(cargos,filtro.cargo);
+  document.getElementById('fMes').innerHTML=opt(meses,filtro.mes,mesLabel);
+  const pessoas=[{id:'Todos',nome:'Todas'},...DADOS.colaboradores.filter(c=>noTime(c,filtro.time))];
+  document.getElementById('fPessoa').innerHTML=pessoas.map(p=>`<option value="${p.id}" ${p.id===filtro.pessoa?'selected':''}>${p.id==='Todos'?'Todas':p.nome}</option>`).join('');
+  document.getElementById('fTime').onchange=e=>{filtro.time=e.target.value;filtro.pessoa='Todos';pintarFiltros();render();};
+  document.getElementById('fCargo').onchange=e=>{filtro.cargo=e.target.value;render();};
+  document.getElementById('fMes').onchange=e=>{filtro.mes=e.target.value;render();};
+  document.getElementById('fPessoa').onchange=e=>{filtro.pessoa=e.target.value;render();};
+}
+
+/* ============ RENDER ============ */
+function render(){
+  pintarNav();
+  document.getElementById('pageTitle').textContent=TELAS.find(t=>t.id===tela).t;
+  document.getElementById('lockState').textContent=desbloqueado?'desbloqueado':'bloqueado';
+  document.getElementById('lockBtn').innerHTML=(desbloqueado?ic('unlock',15):ic('lock',15))+'<span style="margin-left:7px">'+(desbloqueado?'Ocultar restritos':'Dados restritos')+'</span>';
+  document.getElementById('lockBtn').style.display='inline-flex';
+  document.getElementById('lockBtn').style.alignItems='center';
+  document.getElementById('lockBtn').style.justifyContent='center';
+  const c=document.getElementById('content');
+  c.innerHTML=({visao:telaVisao,fichas:telaFichas,nf:telaNF,contratos:telaContratos,ferias:telaFerias,aniversarios:telaAniversarios,comercial:telaComercial,produtividade:telaProdutividade,avaliacoes:telaAvaliacoes})[tela]();
+  // ligar sub-controles se houver
+  document.querySelectorAll('[data-switch]').forEach(b=>b.onclick=()=>{window[b.dataset.fn](b.dataset.switch);});
+}
+
+/* ---------- 1. VISÃO GERAL ---------- */
+function telaVisao(){
+  const ativos=DADOS.colaboradores; // roster inteiro
+  const head={Comercial:0,Operacional:0,Administrativo:0};
+  ativos.forEach(c=>head[c.time_principal]++);
+  const totalHead=ativos.length;
+  const cargoGrupo=cg=>(cg==='Advogado'||cg==='Advogada')?'Advogado(a)':cg;
+  const porCargo={};ativos.forEach(c=>porCargo[cargoGrupo(c.cargo)]=(porCargo[cargoGrupo(c.cargo)]||0)+1);
+  const temposArr=ativos.map(c=>tempoDeCasa(c.data_admissao)).filter(Boolean);
+  const mediaDias=temposArr.length?Math.round(temposArr.reduce((s,t)=>s+t.dias,0)/temposArr.length):0;
+  const mediaAnos=(mediaDias/365).toFixed(1).replace('.',',');
+  const emExp=ativos.filter(c=>c.status==='experiencia').length;
+
+  // Alertas do mês selecionado
+  const m=filtro.mes;const al=alertas(m);
+  return `
+  <h2 class="section">Visão geral</h2>
+  <div class="sub">Foto do quadro em ${mesLongo(m)} · gerado em ${DADOS.meta.gerado_em}</div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="card"><h3>Headcount</h3><div class="kpi">${totalHead}<small> pessoas</small></div>
+      <div style="margin-top:8px">${['Comercial','Operacional','Administrativo'].map(t=>`<span class="pill ${timeClass(t)}" style="margin-right:5px">${t.slice(0,3)} ${head[t]}</span>`).join('')}</div>
+      <div class="muted" style="font-size:11px;margin-top:8px">Julia conta 1x (Operacional) e atua também no Comercial.</div></div>
+    <div class="card"><h3>Tempo médio de casa</h3><div class="kpi">${mediaAnos}<small> anos</small></div>
+      <div class="muted" style="font-size:11px;margin-top:8px">Média de ${temposArr.length} pessoas com admissão registrada.</div></div>
+    <div class="card"><h3>Em experiência</h3><div class="kpi">${emExp}</div>
+      <div style="margin-top:6px">${ativos.filter(c=>c.status==='experiencia').map(c=>`<span class="tag">${nomeCurto(c.id)}</span>`).join('')}</div></div>
+    <div class="card"><h3>Alertas ativos</h3><div class="kpi" style="color:${al.length?'var(--warn)':'var(--ok)'}">${al.length}</div>
+      <div class="muted" style="font-size:11px;margin-top:8px">${mesLongo(m)}</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Distribuição por cargo</h3>
+      ${barrasH(Object.entries(porCargo).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({label:k,value:v,color:'var(--accent2)'})))}
+    </div>
+    <div class="card"><h3>Headcount por time</h3>
+      ${barrasH([['Comercial','com'],['Operacional','ope'],['Administrativo','adm']].map(([t,cl])=>({label:t,value:head[t],color:`var(--${cl})`})),{max:totalHead})}
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Sociedade / Direção</h3>
+    <div style="display:flex;gap:24px;flex-wrap:wrap">
+      ${(DADOS.socias||[]).map(s=>{const sr=(s.remuneracao||[]).find(x=>x.mes===m);const rem=(DADOS.remuneracao&&DADOS.remuneracao.length&&sr)?`<div class="muted" style="font-size:12px">${sens((sr.prolabore?'Pró-labore '+fmtBRL(sr.prolabore):'Sem pró-labore fixo')+(sr.exito?' · comissão '+fmtBRL(sr.exito):''))}</div>`:'';return `<div style="display:flex;align-items:center;gap:11px"><div class="avatar" style="background:linear-gradient(135deg,#b7791f,#e0b34a);color:#fff">${iniciais(s.nome.replace(/^Dra\.?\s*/,''))}</div><div><div style="font-weight:600">${s.nome}</div><div class="muted" style="font-size:12px">Sócia · aniversário ${fmtNasc(s.data_nascimento)}</div>${rem}</div></div>`;}).join('')||'<div class="muted">—</div>'}
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Painel de alertas — ${mesLongo(m)}</h3>
+    ${al.length?al.map(a=>`<div class="alert ${a.cls}"><span class="ic" style="color:var(--${a.cls==='bad'?'bad':a.cls==='exp'?'accent':'warn'})">${ic(a.cls==='bad'?'alert':a.cls==='exp'?'clock':'bell')}</span><div><b>${a.titulo}</b><br><span class="muted">${a.txt}</span></div></div>`).join(''):'<div class="muted">Sem alertas para este mês.</div>'}
+  </div>`;
+}
+function alertas(m){
+  const out=[];
+  // NF pendente do mês
+  const nfMes=DADOS.notas_fiscais.filter(n=>n.mes===m&&!n.entregue).map(n=>colab(n.colaborador_id)).filter(c=>nfEsperada(c,m));
+  if(nfMes.length)out.push({cls:'warn',ic:'🧾',titulo:`${nfMes.length} nota(s) fiscal(is) pendente(s)`,txt:nfMes.map(c=>nomeCurto(c.id)).join(', ')+' — não entregaram a NF de '+mesLabel(m)+'.'});
+  // Em experiência (contrato ainda não firmado — o período de experiência não é registrado)
+  DADOS.colaboradores.forEach(c=>{
+    if(c.status==='experiencia')out.push({cls:'exp',titulo:`${nomeCurto(c.id)} em experiência`,txt:'Contrato ainda não firmado. Avaliar efetivação (o período de experiência não é registrado).'});
+  });
+  // Reajuste salarial anual (1 ano do contrato/aditivo) — avisa com 60 dias de antecedência
+  DADOS.colaboradores.forEach(c=>{
+    const p=proxReajuste(c);if(!p)return;const dd=diasEntre(HOJE,p);
+    if(dd>=0&&dd<=60)out.push({cls:'warn',titulo:`Reajuste salarial de ${nomeCurto(c.id)} em ${dd} dia(s)`,txt:`Completa 1 ano do contrato/aditivo (base ${c.data_base_reajuste.split('-').reverse().join('/')}) — reajuste previsto para ${fmtDate(p)}.`});
+  });
+  // Contrato vencendo ≤90 dias (só se houver data-fim explícita)
+  DADOS.colaboradores.forEach(c=>{
+    const fim=(c.contrato_vigencia||'').match(/(\d{2}\/\d{2}\/\d{4})\s*$/);
+    if(fim&&!/indetermin/i.test(c.contrato_vigencia)){const d=parseBR(fim[1]);if(d){const dd=diasEntre(HOJE,d);if(dd>=0&&dd<=90)out.push({cls:'warn',ic:'📄',titulo:`Contrato de ${nomeCurto(c.id)} vence em ${dd} dias`,txt:'Renovação recomendada.'});}}
+  });
+  // Férias a vencer: saldo>0 e período aquisitivo já encerrado
+  DADOS.ferias.forEach(f=>{
+    const c=colab(f.colaborador_id);if(!c)return;
+    if(f.saldo>0){const aq=(f.periodo_aquisitivo||'').split(' - ')[1];const fim=parseBR(aq);
+      if(fim&&fim<HOJE)out.push({cls:'warn',ic:'🏖️',titulo:`${nomeCurto(c.id)}: ${f.saldo} dias de férias a vencer`,txt:'Período aquisitivo encerrado em '+aq+' — programar concessão.'});}
+    if(f.saldo<0)out.push({cls:'bad',ic:'🏖️',titulo:`${nomeCurto(c.id)}: saldo de férias negativo (${f.saldo})`,txt:'Dias gozados acima do direito adquirido (adiantamento) — conferir.'});
+  });
+  return out;
+}
+
+/* ---------- 2. FICHAS INDIVIDUAIS ---------- */
+function telaFichas(){
+  const lista=DADOS.colaboradores.filter(passaFiltroPessoa);
+  if(!lista.length)return '<div class="muted">Nenhum colaborador com os filtros atuais.</div>';
+  const _tR=DADOS.remuneracao&&DADOS.remuneracao.length>0,_tS=DADOS.sancoes&&DADOS.sancoes.length>0;
+  const subInfo=(_tR||_tS)?`${_tS?'sanções':''}${_tS&&_tR?' e ':''}${_tR?'remuneração':''} à mostra (versão da gestão).`:'sem dados sensíveis nesta visão.';
+  return `<h2 class="section">Fichas individuais</h2><div class="sub">${lista.length} colaborador(es) · ${subInfo}</div>
+  <div class="grid g2">${lista.map(fichaCard).join('')}</div>`;
+}
+function fichaCard(c){
+  const t=tempoDeCasa(c.data_admissao);
+  const rem=DADOS.remuneracao.filter(r=>r.colaborador_id===c.id).sort((a,b)=>a.mes.localeCompare(b.mes));
+  const ultRem=rem[rem.length-1];
+  const nfMes=DADOS.notas_fiscais.filter(n=>n.colaborador_id===c.id);
+  const nfPend=nfMes.filter(n=>!n.entregue&&nfEsperada(c,n.mes)).length;
+  const fer=DADOS.ferias.find(f=>f.colaborador_id===c.id);
+  const san=DADOS.sancoes.find(s=>s.colaborador_id===c.id);
+  const temRemun=DADOS.remuneracao&&DADOS.remuneracao.length>0;
+  const temSanc=DADOS.sancoes&&DADOS.sancoes.length>0;
+  const remRow=(temRemun&&c.time_principal==='Administrativo')?`<div class="kv" style="grid-column:1/-1"><div class="k">Remuneração${ultRem?' · '+mesLabel(ultRem.mes):''}</div><div class="v">${remunFmt(ultRem,'total')}</div></div>`:'';
+  const sanRow=temSanc?`<div class="kv"><div class="k">Sanções</div><div class="v">${san?`${san.faltas} falta(s)${san.ja_suspenso?' · <span class="cell-bad">já suspenso</span>':''}`:'sem registro'}</div></div>`:'';
+  const stPill=c.status==='ativo'?'<span class="pill ok">ativo</span>':'<span class="pill exp">experiência</span>';
+  return `<div class="fichacard">
+    <div class="fichahead">
+      <div class="avatar" style="background:${corTime(c)}">${iniciais(c.nome)}</div>
+      <div><div style="font-weight:700;font-size:15px">${c.nome}</div>
+      <div style="margin-top:3px"><span class="pill ${timeClass(c.time_principal)}">${c.time_principal}</span> ${c.papel_secundario?`<span class="pill ${timeClass(c.papel_secundario)}">+${c.papel_secundario}</span>`:''} ${stPill} ${(c.tags||[]).map(t=>`<span class="pill" style="background:rgba(8,145,178,.12);color:#0891b2">${t}</span>`).join('')}</div></div>
+    </div>
+    <div class="fichabody">
+      <div class="kv"><div class="k">Cargo</div><div class="v">${c.cargo}</div></div>
+      <div class="kv"><div class="k">Vínculo</div><div class="v">${c.tipo_vinculo||'—'}</div></div>
+      ${c.oab?`<div class="kv"><div class="k">OAB</div><div class="v">${c.oab}</div></div>`:''}
+      <div class="kv"><div class="k">Admissão</div><div class="v">${c.data_admissao?c.data_admissao.split('-').reverse().join('/'):'<span class="muted">pendente</span>'}</div></div>
+      <div class="kv"><div class="k">Tempo de casa</div><div class="v">${t?tempoTexto(t):'—'}</div></div>
+      <div class="kv"><div class="k">Situação</div><div class="v">${c.data_admissao?('Admitido(a)'+(c.fim_experiencia?' <span class="muted" style="font-size:11px">· exp. até '+c.fim_experiencia.split('-').reverse().join('/')+'</span>':'')):'Em experiência'}</div></div>
+      <div class="kv"><div class="k">Próx. reajuste salarial</div><div class="v">${(()=>{const p=proxReajuste(c);return p?fmtDate(p):'<span class="muted">—</span>';})()}</div></div>
+      <div class="kv"><div class="k">Nascimento</div><div class="v">${c.data_nascimento?fmtNasc(c.data_nascimento):'<span class="muted">cadastrar</span>'}</div></div>
+      <div class="kv"><div class="k">Contrato</div><div class="v" style="font-size:12px">${c.contrato_vigencia||'—'}</div></div>
+      <div class="kv"><div class="k">NF pendentes (2026)</div><div class="v">${nfPend?`<span class="cell-bad">${nfPend}</span>`:'<span class="cell-ok">0</span>'}</div></div>
+      <div class="kv"><div class="k">Saldo de férias</div><div class="v">${fer?(fer.saldo+' dias'+(fer.banco_horas?` · ${fer.banco_horas}h banco`:'')):'—'}</div></div>
+      ${remRow}${sanRow}
+    </div>
+    ${c.notas?`<div style="padding:0 16px 14px"><div class="muted" style="font-size:11.5px">ⓘ ${c.notas}</div></div>`:''}
+  </div>`;
+}
+
+/* ---------- 3. NOTAS FISCAIS ---------- */
+function telaNF(){
+  const meses=[...new Set(DADOS.notas_fiscais.map(n=>n.mes))].sort();
+  const pessoas=DADOS.colaboradores.filter(passaFiltroPessoa);
+  let rows=pessoas.map(c=>{
+    const cels=meses.map(m=>{
+      const n=DADOS.notas_fiscais.find(x=>x.colaborador_id===c.id&&x.mes===m);
+      if(c.tipo_vinculo!=='PJ')return '<td class="na" title="não emite NF">—</td>';
+      if(c.nf_desde&&m<c.nf_desde)return '<td class="na" title="antes de começar a emitir NF">—</td>';
+      if(!n)return '<td class="na">·</td>';
+      return n.entregue?`<td class="yes" title="${n.arquivo||''}">✓</td>`:'<td class="no" title="pendente">✕</td>';
+    }).join('');
+    return `<tr><td>${c.nome}</td>${cels}</tr>`;
+  }).join('');
+  const totPend=DADOS.notas_fiscais.filter(n=>!n.entregue&&nfEsperada(colab(n.colaborador_id),n.mes)).length;
+  return `<h2 class="section">Notas fiscais</h2>
+  <div class="sub">Matriz de entrega colaborador × mês. Presença do arquivo no Drive = entregue.</div>
+  <div class="legend"><span><span class="dot" style="background:var(--ok)"></span>entregue (✓)</span><span><span class="dot" style="background:var(--bad)"></span>pendente (✕)</span><span><span class="dot" style="background:var(--muted2)"></span>não se aplica (—)</span></div>
+  <div class="card scroll"><table class="matrix"><thead><tr><th>Colaborador</th>${meses.map(m=>`<th class="num" style="text-align:center">${mesLabel(m)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="muted" style="font-size:12px;margin-top:10px">Total de pendências (PJ, 2026): <b class="cell-bad">${totPend}</b>. Passe o mouse no ✓ para ver o nome do arquivo. Colaboradores sem vínculo PJ definido não emitem NF.</div>`;
+}
+
+/* ---------- 4. CONTRATOS & RENOVAÇÕES ---------- */
+function telaContratos(){
+  const lista=DADOS.colaboradores.filter(passaFiltroPessoa);
+  const rows=lista.map(c=>{
+    const sit=c.data_admissao
+      ?'<span class="pill ok">Admitido(a)</span>'+(c.fim_experiencia?' <span class="muted" style="font-size:11px">· exp. até '+c.fim_experiencia.split('-').reverse().join('/')+'</span>':'')
+      :'<span class="pill exp">Em experiência</span> <span class="muted" style="font-size:11px">contrato ainda não firmado</span>';
+    return `<tr>
+      <td>${c.nome}</td>
+      <td><span class="pill ${timeClass(c.time_principal)}">${c.time_principal}</span></td>
+      <td>${c.data_admissao?c.data_admissao.split('-').reverse().join('/'):'<span class="muted">—</span>'}</td>
+      <td style="font-size:12px">${c.contrato_vigencia||'<span class="muted">sem contrato (em experiência)</span>'}</td>
+      <td style="font-size:12px">${(()=>{const p=proxReajuste(c);return p?fmtDate(p):'<span class="muted">—</span>';})()}</td>
+      <td>${sit}</td>
+    </tr>`;
+  }).join('');
+  return `<h2 class="section">Contratos & renovações</h2>
+  <div class="sub">Fluxo: <b>experiência</b> (antes) → <b>admissão</b> (início de fato) → <b>contrato</b> (firmado na ou após a admissão, prazo indeterminado). Quem tem admissão/contrato está efetivado; quem não tem está em experiência.</div>
+  <div class="banner">Os contratos têm prazo <b>indeterminado</b> (sem data de término, logo sem vencimento). As datas de <b>experiência</b> não estão nos documentos — aparecem só quando informadas manualmente (ex.: "exp. até"). A coluna Situação mostra quem já foi admitido e quem ainda está em experiência.</div>
+  <div class="card scroll"><table><thead><tr><th>Colaborador</th><th>Time</th><th>Admissão</th><th>Vigência do contrato</th><th>Próx. reajuste</th><th>Situação</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- 5. FÉRIAS ---------- */
+function telaFerias(){
+  const lista=DADOS.colaboradores.filter(passaFiltroPessoa);
+  const rows=lista.map(c=>{
+    const f=DADOS.ferias.find(x=>x.colaborador_id===c.id);
+    if(!f||(!f.periodo_aquisitivo&&!f.saldo&&!f.banco_horas))return `<tr><td>${c.nome}</td><td colspan="6" class="muted">sem ficha de férias no Drive</td></tr>`;
+    const saldoCls=f.saldo<0?'cell-bad':f.saldo>0?'':'muted';
+    return `<tr>
+      <td>${c.nome}</td>
+      <td style="font-size:12px">${f.periodo_aquisitivo||'—'}</td>
+      <td class="num">${f.dias_direito||'—'}</td>
+      <td style="font-size:12px">${f.periodo_concessivo||'—'}</td>
+      <td class="num">${f.dias_gozados||0}</td>
+      <td class="num ${saldoCls}">${f.saldo}</td>
+      <td class="num">${f.banco_horas?f.banco_horas+'h':'—'}</td>
+    </tr>`;
+  }).join('');
+  const saldos=lista.map(c=>{const f=DADOS.ferias.find(x=>x.colaborador_id===c.id);return f?{label:nomeCurto(c.id),value:f.saldo,color:f.saldo<0?'var(--bad)':'var(--ope)'}:null;}).filter(Boolean).filter(x=>x.value!==0);
+  return `<h2 class="section">Férias</h2>
+  <div class="sub">Saldo de dias e banco de horas por pessoa. Saldo negativo = dias gozados além do direito adquirido (adiantamento).</div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Saldo de dias por pessoa</h3>${saldos.length?barrasH(saldos,{max:Math.max(...saldos.map(s=>Math.abs(s.value)))}):'<div class="muted">sem dados</div>'}</div>
+    <div class="card"><h3>Resumo</h3>
+      <div class="kv" style="margin-bottom:10px"><div class="k">Com saldo a gozar</div><div class="v">${lista.filter(c=>{const f=DADOS.ferias.find(x=>x.colaborador_id===c.id);return f&&f.saldo>0;}).length} pessoa(s)</div></div>
+      <div class="kv" style="margin-bottom:10px"><div class="k">Saldo negativo</div><div class="v">${lista.filter(c=>{const f=DADOS.ferias.find(x=>x.colaborador_id===c.id);return f&&f.saldo<0;}).map(c=>nomeCurto(c.id)).join(', ')||'nenhum'}</div></div>
+      <div class="kv"><div class="k">Sem ficha</div><div class="v">${lista.filter(c=>{const f=DADOS.ferias.find(x=>x.colaborador_id===c.id);return !f||(!f.periodo_aquisitivo&&!f.saldo&&!f.banco_horas);}).map(c=>nomeCurto(c.id)).join(', ')||'nenhum'}</div></div>
+    </div>
+  </div>
+  <div class="card scroll"><table><thead><tr><th>Colaborador</th><th>Período aquisitivo</th><th class="num">Dias direito</th><th>Período concessivo</th><th class="num">Gozados</th><th class="num">Saldo</th><th class="num">Banco h</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- 6. ANIVERSÁRIOS & TEMPO DE CASA ---------- */
+function telaAniversarios(){
+  const mesNum=+filtro.mes.split('-')[1];
+  const comNasc=DADOS.colaboradores.filter(c=>c.data_nascimento);
+  const aniv=comNasc.filter(c=>+c.data_nascimento.split('-')[1]===mesNum);
+  const anivSoc=(DADOS.socias||[]).filter(s=>s.data_nascimento&&+s.data_nascimento.split('-')[1]===mesNum);
+  const semNasc=DADOS.colaboradores.filter(c=>!c.data_nascimento);
+  // marcos de tempo de casa
+  const marcos=DADOS.colaboradores.map(c=>{const t=tempoDeCasa(c.data_admissao);if(!t)return null;let marco=null;
+    [5,2,1].forEach(a=>{if(!marco&&t.anos>=a&&t.anos<a+1)marco=a;});
+    return {c,t,marco};}).filter(Boolean).sort((a,b)=>b.t.dias-a.t.dias);
+  return `<h2 class="section">Aniversários & tempo de casa</h2>
+  <div class="sub">Aniversariantes de ${MESES_LONGO[mesNum]} e marcos de tempo de casa (1, 2, 5 anos).</div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Aniversariantes de ${MESES_LONGO[mesNum]}</h3>
+      ${(()=>{const lst=[...aniv.map(c=>({nome:c.nome,dm:c.data_nascimento,socia:false})),...anivSoc.map(s=>({nome:s.nome,dm:s.data_nascimento,socia:true}))];return lst.length?lst.map(p=>`<div class="alert exp"><span class="ic" style="color:${p.socia?'#b7791f':'var(--accent)'}">${ic('aniversarios')}</span><div><b>${p.nome}</b>${p.socia?' <span class="pill" style="background:rgba(183,121,31,.12);color:#b7791f">Sócia</span>':''} — ${p.dm.split('-').reverse().slice(0,2).join('/')}</div></div>`).join(''):'<div class="muted">Nenhum aniversariante neste mês.</div>';})()}
+      ${semNasc.length?`<div class="muted" style="font-size:11.5px;margin-top:10px">⚠ Sem aniversário cadastrado: ${semNasc.map(c=>nomeCurto(c.id)).join(', ')} — não constam no Calendário 2026.</div>`:''}
+    </div>
+    <div class="card"><h3>Tempo de casa</h3>
+      ${barrasH(DADOS.colaboradores.map(c=>{const t=tempoDeCasa(c.data_admissao);return t?{label:nomeCurto(c.id),value:+(t.dias/365).toFixed(2),color:corTime(c),sub:tempoTexto(t)}:null;}).filter(Boolean).sort((a,b)=>b.value-a.value),{fmt:v=>v.toFixed(1)+'a'})}
+    </div>
+  </div>
+  <div class="card"><h3>Marcos de casa</h3>
+    <div class="scroll"><table><thead><tr><th>Colaborador</th><th>Admissão</th><th>Tempo</th><th>Marco</th></tr></thead><tbody>
+    ${marcos.map(m=>`<tr><td>${m.c.nome}</td><td>${m.c.data_admissao.split('-').reverse().join('/')}</td><td>${tempoTexto(m.t)}</td><td>${m.marco?`<span class="pill ok">${m.marco} ano${m.marco>1?'s':''}</span>`:'<span class="muted">—</span>'}</td></tr>`).join('')}
+    ${DADOS.colaboradores.filter(c=>!c.data_admissao).map(c=>`<tr><td>${c.nome}</td><td class="muted">admissão pendente</td><td class="muted">—</td><td class="muted">—</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+/* ---------- 7. COMERCIAL / CLOSERS ---------- */
+let comercialModo='fechados';
+function setComercial(m){comercialModo=m;render();}
+function telaComercial(){
+  const closers=DADOS.colaboradores.filter(c=>noTime(c,'Comercial')).filter(c=>DADOS.kpi_closer.some(k=>k.colaborador_id===c.id));
+  const meses=[...new Set(DADOS.kpi_closer.map(k=>k.mes))].sort();
+  const m=filtro.mes;
+  // tabela do mês
+  const linhasMes=closers.map(c=>DADOS.kpi_closer.find(k=>k.colaborador_id===c.id&&k.mes===m)).filter(Boolean);
+  const pessoaSel=filtro.pessoa!=='Todos';
+  const closersF=pessoaSel?closers.filter(c=>c.id===filtro.pessoa):closers;
+
+  const pagosCrm=(cid,mes)=>{const r=(DADOS.pagos_crm||[]).find(x=>x.colaborador_id===cid&&x.mes===mes);return r||{qtd:0,valor:0};};
+  const entradaCrm=(cid,mes)=>(DADOS.entrada_crm||[]).find(x=>x.colaborador_id===cid&&x.mes===mes)||null;
+  const mesAnt=meses[meses.indexOf(m)-1];
+  // séries por mês
+  const cats=meses.map(mesLabel);
+  const cores={felipe:'#d97706',lindsey:'#2563eb',pamela:'#db2777',julia_folkis:'#059669'};
+  const campo=comercialModo; // fechados|pagos|atendimentos
+  const series=closersF.map(c=>({name:nomeCurto(c.id),color:cores[c.id]||'var(--accent)',data:meses.map(mm=>{if(campo==='pagos')return pagosCrm(c.id,mm).qtd;const k=DADOS.kpi_closer.find(x=>x.colaborador_id===c.id&&x.mes===mm);return k?k[campo]:0;})}));
+  // taxa conversão linha
+  const serieTaxa=closersF.map(c=>({name:nomeCurto(c.id),color:cores[c.id]||'var(--accent)',data:meses.map(mm=>{const k=DADOS.kpi_closer.find(x=>x.colaborador_id===c.id&&x.mes===mm);return k?+(k.taxa_conversao*100).toFixed(1):null;})}));
+
+  const totMes=linhasMes.reduce((s,k)=>({at:s.at+k.atendimentos,fe:s.fe+k.fechados}),{at:0,fe:0});
+  const totPagos=closers.reduce((s,c)=>{const p=pagosCrm(c.id,m);return {qtd:s.qtd+p.qtd,valor:s.valor+p.valor};},{qtd:0,valor:0});
+  const entMes=closers.map(c=>entradaCrm(c.id,m)).filter(Boolean);const temEntradaMes=entMes.length>0;const totEntrada=entMes.reduce((s,e)=>s+e.entrada,0);
+
+  // ----- Metas por faixa (Bronze/Prata/Ouro/Master) -----
+  const MC=(DADOS.metas_closer&&DADOS.metas_closer.por_closer)||{};
+  const faixaCor={Bronze:'#b45309',Prata:'#64748b',Ouro:'#b7791f',Master:'#7c3aed'};
+  const pillFaixa=n=>`<span class="pill" style="background:${faixaCor[n]}1f;color:${faixaCor[n]}">${n}</span>`;
+  const faixaDe=(v,faixas)=>{let atual=null,prox=null;faixas.forEach(f=>{if(v>=f.min)atual=f;else if(!prox)prox=f;});return {atual,prox};};
+  const valorContr=(cid,mes)=>{const r=(DADOS.valor_contratos||[]).find(x=>x.colaborador_id===cid&&x.mes===mes);return r?r.valor:null;};
+  const ultimos6=meses.slice(-6);
+  const metasRows=closersF.map(c=>{
+    const cfg=MC[c.id];const nome=nomeCurto(c.id);
+    if(!cfg||!cfg.tipo){return `<tr><td>${nome}</td><td colspan="${ultimos6.length+1}" class="muted" style="font-size:12px">${(cfg&&cfg.obs)||'sem meta definida'}</td></tr>`;}
+    const reais=cfg.tipo==='reais';
+    const escBase=reais?`Bronze R$${cfg.faixas[0].min/1000}k`:`Bronze ${cfg.faixas[0].min}`;
+    const cells=ultimos6.map(mm=>{
+      const val=reais?valorContr(c.id,mm):pagosCrm(c.id,mm).qtd;
+      if(val==null)return `<td style="text-align:center" class="muted">—</td>`;
+      const {atual}=faixaDe(val,cfg.faixas);
+      const disp=reais?('R$'+(val/1000).toFixed(1)+'k'):val;
+      const cor=atual?faixaCor[atual.nome]:'var(--bad)';
+      return `<td style="text-align:center;font-size:11.5px"><div style="font-weight:700">${disp}</div><div style="color:${cor};font-size:10px">${atual?atual.nome+' ✓':'abaixo ✗'}</div></td>`;
+    }).join('');
+    return `<tr><td>${nome}</td><td class="muted" style="font-size:11px">${escBase}</td>${cells}</tr>`;
+  }).join('');
+  const metaCard=`<div class="card" style="margin-bottom:16px"><h3>Metas por faixa — últimos ${ultimos6.length} meses</h3>
+    <div class="muted" style="font-size:11.5px;margin-bottom:10px">Por mês: contratos <b>pagos</b> (Felipe/Lindsey, CRM real) ou <b>valor R$</b> (Julia, controle) · a <b>faixa</b> atingida · <b>✓</b> = bateu a meta (Bronze+), <b>✗</b> = abaixo. <b>Pamela</b>: sem meta. Julia até jun (o controle dela não tem julho).</div>
+    <div class="scroll"><table><thead><tr><th>Closer</th><th>Meta base</th>${ultimos6.map(mm=>`<th class="num">${mesLabel(mm)}</th>`).join('')}</tr></thead><tbody>${metasRows||`<tr><td colspan="${ultimos6.length+2}" class="muted">Sem closers no filtro.</td></tr>`}</tbody></table></div>
+  </div>`;
+
+  const tbl=closersF.map(c=>{
+    const k=DADOS.kpi_closer.find(x=>x.colaborador_id===c.id&&x.mes===m);
+    const p=pagosCrm(c.id,m), pAnt=mesAnt?pagosCrm(c.id,mesAnt):null;
+    const delta=pAnt?p.qtd-pAnt.qtd:null;
+    const dt=delta==null?'':delta>0?`<span style="color:var(--ok);font-size:11px"> ▲${delta}</span>`:delta<0?`<span style="color:var(--bad);font-size:11px"> ▼${Math.abs(delta)}</span>`:'<span class="muted" style="font-size:11px"> =</span>';
+    if(!k&&!p.qtd)return '';
+    return `<tr>
+      <td>${c.nome}</td>
+      <td class="num">${k?k.atendimentos:0}</td>
+      <td class="num cell-ok">${k?k.fechados:0}</td>
+      <td class="num">${k?fmtPct(k.taxa_conversao):'—'}</td>
+      <td class="num" style="font-weight:700;color:var(--accent)">${p.qtd}${dt}</td>
+      <td class="num">${(()=>{const e=entradaCrm(c.id,m);return e?fmtBRL(e.entrada):'<span class="muted">—</span>';})()}</td>
+    </tr>`;}).filter(Boolean).join('')||`<tr><td colspan="6" class="muted">Sem dados em ${mesLabel(m)}.</td></tr>`;
+
+  return `<h2 class="section">Comercial / Closers</h2>
+  <div class="sub">Avaliação de desempenho dos closers. <b>Atendimentos</b> e <b>assinados</b> vêm do KPI, pela <b>data da reunião</b> — ⚠️ relativizado (não é a data real da assinatura). <b>Pagos</b> vêm do CRM, pela <b>data real de pagamento</b>. Conversão = assinados ÷ atendimentos qualificados (exclui No Show e Desqualificado). Agregado por closer (LGPD).</div>
+  <div class="banner">⚠️ Julho/2026 é <b>parcial</b> (foto do início do mês). Para o mês corrente valer por inteiro, os dados precisam ser reprocessados — KPI e CRM são alimentados ao longo do mês.</div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="card"><h3>Atendimentos ${mesLabel(m)}</h3><div class="kpi">${totMes.at}</div><div class="muted" style="font-size:10px;margin-top:4px">data da reunião</div></div>
+    <div class="card"><h3>Assinados ${mesLabel(m)}</h3><div class="kpi" style="color:var(--ok)">${totMes.fe}</div><div class="muted" style="font-size:10px;margin-top:4px">KPI · relativizado</div></div>
+    <div class="card"><h3>Pagos ${mesLabel(m)}</h3><div class="kpi" style="color:var(--accent)">${totPagos.qtd}</div><div class="muted" style="font-size:10px;margin-top:4px">pagamento real (CRM)</div></div>
+    <div class="card"><h3>Entrada paga ${mesLabel(m)}</h3><div class="kpi">${temEntradaMes?fmtBRL(totEntrada):'—'}</div><div class="muted" style="font-size:10px;margin-top:4px">${temEntradaMes?'sinal recebido (CRM mensal)':'sem CRM deste mês'}</div></div>
+  </div>
+  ${metaCard}
+  <div class="card" style="margin-bottom:16px"><h3>Detalhe por closer — ${mesLongo(m)}</h3>
+    <div class="scroll"><table><thead><tr><th>Closer</th><th class="num">Atend.</th><th class="num">Assinados</th><th class="num">Conversão</th><th class="num">Pagos (real)</th><th class="num">Entrada paga</th></tr></thead><tbody>${tbl}</tbody></table></div>
+    <div class="muted" style="font-size:11px;margin-top:6px">▲/▼ = pagos vs ${mesAnt?mesLabel(mesAnt):'mês anterior'}. Atend./Assinados: data da reunião (relativizado). Pagos: qtd por data real de pagamento (CRM mestre). Entrada paga: sinal recebido (CRMs mensais, jan–jun; julho sem CRM).</div>
+  </div>
+  ${cardRemun('Remuneração dos closers — '+mesLongo(m), closers.map(c=>({cid:c.id,modo:c.id==='julia_folkis'?'comercial':'total'})), m)}
+  <div class="card" style="margin-bottom:16px"><h3 style="display:flex;align-items:center;gap:8px">Evolução por mês
+    <span style="margin-left:auto"></span>
+    ${['fechados','pagos','atendimentos'].map(x=>`<button class="switchbtn ${comercialModo===x?'active':''}" data-switch="${x}" data-fn="setComercial">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}
+  </h3>
+    ${grupoBarras(series,cats,{vals:true,h:230})}
+  </div>
+  <div class="card"><h3>Taxa de conversão (%) por mês</h3>
+    ${linhas(serieTaxa,cats,{h:220})}
+  </div>`;
+}
+
+/* ---------- 8. PRODUTIVIDADE OPERACIONAL ---------- */
+let prodModo='total';
+function setProd(m){prodModo=m;render();}
+function telaProdutividade(){
+  const ops=DADOS.colaboradores.filter(c=>noTime(c,'Operacional')).filter(c=>DADOS.produtividade.some(p=>p.colaborador_id===c.id));
+  const meses=[...new Set(DADOS.produtividade.map(p=>p.mes))].sort();
+  const m=meses.includes(filtro.mes)?filtro.mes:meses[meses.length-1];
+  const pessoaSel=filtro.pessoa!=='Todos';
+  const opsF=pessoaSel?ops.filter(c=>c.id===filtro.pessoa):ops;
+  const cats=meses.map(mesLabel);
+  const cores={julia_folkis:'#059669',bruna_santana:'#2563eb',bruna_cardoso:'#7c3aed',pedro_sandrin:'#d97706',rhaissa:'#db2777',karla:'#0891b2'};
+  const campo=prodModo; // total|prazos|tarefas|audiencias
+  const series=opsF.map(c=>({name:nomeCurto(c.id),color:cores[c.id]||'var(--accent)',data:meses.map(mm=>{const p=DADOS.produtividade.find(x=>x.colaborador_id===c.id&&x.mes===mm);return p?p[campo]:0;})}));
+
+  const linhasMes=opsF.map(c=>DADOS.produtividade.find(p=>p.colaborador_id===c.id&&p.mes===m)).filter(Boolean);
+  const tot=linhasMes.reduce((s,p)=>({pr:s.pr+p.prazos,ta:s.ta+p.tarefas,au:s.au+p.audiencias,to:s.to+p.total,pe:s.pe+p.pendentes,ca:s.ca+p.cancelados}),{pr:0,ta:0,au:0,to:0,pe:0,ca:0});
+  const tbl=linhasMes.map(p=>{const c=colab(p.colaborador_id);return `<tr>
+      <td>${c.nome}</td>
+      <td class="num">${p.prazos}</td><td class="num">${p.tarefas}</td><td class="num">${p.audiencias}</td>
+      <td class="num cell-ok">${p.total}</td><td class="num">${p.pendentes}</td><td class="num ${p.cancelados>15?'cell-bad':''}">${p.cancelados}</td>
+    </tr>`;}).join('')||`<tr><td colspan="7" class="muted">Sem dados em ${mesLabel(m)}.</td></tr>`;
+
+  return `<h2 class="section">Produtividade operacional</h2>
+  <div class="sub">Prazos, tarefas e audiências por advogado(a). Fonte: Produtividade Astrea — dados de Maio e Junho/2026.</div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="card"><h3>Total cumprido ${mesLabel(m)}</h3><div class="kpi" style="color:var(--ok)">${tot.to}</div></div>
+    <div class="card"><h3>Prazos ${mesLabel(m)}</h3><div class="kpi">${tot.pr}</div></div>
+    <div class="card"><h3>Audiências ${mesLabel(m)}</h3><div class="kpi">${tot.au}</div></div>
+    <div class="card"><h3>Pendentes / cancelados</h3><div class="kpi">${tot.pe}<small> / ${tot.ca}</small></div></div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><h3>Detalhe de ${mesLongo(m)}</h3>
+    <div class="scroll"><table><thead><tr><th>Advogado(a)</th><th class="num">Prazos</th><th class="num">Tarefas</th><th class="num">Audiências</th><th class="num">Total</th><th class="num">Pendentes</th><th class="num">Cancelados</th></tr></thead><tbody>${tbl}</tbody></table></div>
+  </div>
+  ${cardRemun('Remuneração operacional — '+mesLongo(m), ops.map(c=>({cid:c.id,modo:'operacional'})), m)}
+  <div class="card" style="margin-bottom:16px"><h3 style="display:flex;align-items:center;gap:8px">Comparativo / evolução
+    <span style="margin-left:auto"></span>
+    ${['total','prazos','tarefas','audiencias'].map(x=>`<button class="switchbtn ${prodModo===x?'active':''}" data-switch="${x}" data-fn="setProd">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}
+  </h3>
+    ${grupoBarras(series,cats,{vals:true,h:230})}
+  </div>
+  <div class="card"><h3>Evolução do total cumprido</h3>
+    ${linhas(opsF.map(c=>({name:nomeCurto(c.id),color:cores[c.id]||'var(--accent)',data:meses.map(mm=>{const p=DADOS.produtividade.find(x=>x.colaborador_id===c.id&&x.mes===mm);return p?p.total:null;})})),cats,{h:200})}
+  </div>`;
+}
+
+/* ---------- 9. AVALIAÇÕES (operacional) ---------- */
+let avalCiclo=null;
+function setAval(id){avalCiclo=id;render();}
+function telaAvaliacoes(){
+  const A=DADOS.avaliacoes;
+  if(!A||!A.ciclos||!A.ciclos.length)return '<h2 class="section">Avaliações</h2><div class="muted">Sem dados de avaliação nesta versão.</div>';
+  const ciclos=A.ciclos, Q=A.quesitos;
+  if(!avalCiclo||!ciclos.some(c=>c.id===avalCiclo))avalCiclo=ciclos[ciclos.length-1].id;
+  const cy=ciclos.find(c=>c.id===avalCiclo);
+  const idx=ciclos.findIndex(c=>c.id===avalCiclo);
+  const prev=idx>0?ciclos[idx-1]:null;
+  const corG=g=>g>=2.9?'#059669':g>=2.7?'#2563eb':g>=2.5?'#d97706':'#dc2626';
+  const geralPrev=(cid,nome)=>{if(!prev)return null;const pp=prev.pessoas.find(x=>(cid&&x.colaborador_id===cid)||x.nome===nome);return pp?pp.geral:null;};
+  const pessoaSel=filtro.pessoa!=='Todos';
+  const pessoas=pessoaSel?cy.pessoas.filter(p=>p.colaborador_id===filtro.pessoa):cy.pessoas;
+  const ranking=cy.pessoas.slice().sort((a,b)=>b.geral-a.geral);
+  const rankHtml=barrasH(ranking.map(p=>({label:p.nome.split(' ').slice(0,2).join(' '),value:p.geral,color:corG(p.geral)})),{max:3,fmt:v=>v.toFixed(2)});
+  const cards=pessoas.map(p=>{
+    const bars=Q.map((q,i)=>{const v=p.notas[i];return `<div class="barrow" style="grid-template-columns:112px 1fr 34px;margin:5px 0"><div class="muted">${q}</div><div class="bartrack" style="height:12px"><div class="barfill" style="width:${(v/3)*100}%;background:${corG(v)}"></div></div><div class="num" style="font-size:12px">${v.toFixed(2)}</div></div>`;}).join('');
+    const gp=geralPrev(p.colaborador_id,p.nome);const delta=gp!=null?+(p.geral-gp).toFixed(2):null;
+    const dtag=delta==null?'':delta>0?`<span style="color:var(--ok);font-size:11.5px">▲ +${delta.toFixed(2)}</span>`:delta<0?`<span style="color:var(--bad);font-size:11.5px">▼ ${delta.toFixed(2)}</span>`:`<span class="muted" style="font-size:11.5px">=</span>`;
+    const lista=(t,arr,cor)=>arr&&arr.length?`<div style="margin-top:9px"><div style="font-size:10.5px;font-weight:700;color:${cor};text-transform:uppercase;letter-spacing:.4px">${t}</div><ul style="margin:4px 0 0;padding-left:17px">${arr.map(x=>`<li style="font-size:12.5px;margin:3px 0;line-height:1.45">${x}</li>`).join('')}</ul></div>`:'';
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:4px">
+        <div class="avatar" style="background:${corG(p.geral)}">${iniciais(p.nome)}</div>
+        <div style="flex:1"><div style="font-weight:700">${p.nome}</div>${p.colaborador_id?'':'<span class="pill" style="background:var(--panel2);color:var(--muted)">ex-colaboradora</span>'}</div>
+        <div style="text-align:right"><div style="font-size:26px;font-weight:700;letter-spacing:-1px;color:${corG(p.geral)}">${p.geral.toFixed(2)}<small style="color:var(--muted2);font-size:12px">/3</small></div>${dtag?dtag+' <span class="muted" style="font-size:10.5px">vs '+prev.label.split(' ')[0]+'</span>':''}</div>
+      </div>
+      ${p.obs?`<div class="muted" style="font-size:11.5px;margin:2px 0 4px">ⓘ ${p.obs}</div>`:''}
+      <div style="margin:8px 0 2px">${bars}</div>
+      ${lista('Pontos fortes',p.fortes,'#059669')}
+      ${lista('Destaques do trimestre',p.destaques,'var(--accent)')}
+      ${lista('Pontos de atenção',p.atencao,'#d97706')}
+    </div>`;
+  }).join('');
+  return `<h2 class="section">Avaliações de desempenho — Operacional</h2>
+  <div class="sub">${A.metodologia}</div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+    ${ciclos.map(c=>`<button class="switchbtn ${c.id===avalCiclo?'active':''}" data-switch="${c.id}" data-fn="setAval">${c.label}</button>`).join('')}
+    <span class="muted" style="font-size:12px;margin-left:6px">${cy.respostas} respostas · escala 0–3 · ${prev?'comparando com '+prev.label:'primeiro ciclo'}</span>
+  </div>
+  <div class="card" style="margin-bottom:16px;background:var(--accent-soft);border-color:rgba(99,102,241,.22)"><h3 style="color:#4f46e5">Leitura rápida — ${cy.label}</h3><div style="font-size:13px;color:#3730a3;line-height:1.55">${cy.leitura}</div></div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Ranking do time (média geral /3)</h3>${rankHtml}</div>
+    <div class="card"><h3>Escala &amp; quesitos</h3><div class="muted" style="font-size:12.5px;line-height:1.8">${A.escala.split(' · ').map(x=>`<div>${x}</div>`).join('')}</div><div style="font-size:11.5px;margin-top:8px;color:var(--muted)">Quesitos: <b>${Q.join(' · ')}</b>.</div></div>
+  </div>
+  <div class="grid g2">${cards||'<div class="muted">Nenhuma pessoa no filtro.</div>'}</div>`;
+}
+
+/* ============ Password / restrito ============ */
+function abrirModal(){document.getElementById('overlay').style.display='flex';document.getElementById('pwd').value='';document.getElementById('pwdErr').textContent='';document.getElementById('pwd').focus();}
+function fecharModal(){document.getElementById('overlay').style.display='none';}
+document.getElementById('lockBtn').onclick=()=>{if(desbloqueado){desbloqueado=false;render();}else abrirModal();};
+document.getElementById('cancelPwd').onclick=fecharModal;
+document.getElementById('okPwd').onclick=()=>{
+  if(document.getElementById('pwd').value===SENHA_RESTRITA){desbloqueado=true;fecharModal();render();}
+  else document.getElementById('pwdErr').textContent='Senha incorreta.';
+};
+document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('okPwd').click();});
+
+/* ============ Boot ============ */
+function iniciar(origem){
+  const temR=DADOS.remuneracao&&DADOS.remuneracao.length>0, temS=DADOS.sancoes&&DADOS.sancoes.length>0;
+  temSensiveis=!!(temR||temS);
+  document.querySelector('.lockbar').style.display='none';
+  const rodape=PUBLICO
+    ? `Acesso por código · TODO o conteúdo criptografado (AES-256), inclui remuneração. Só compartilhe o código com quem pode ver salários. Documentos-fonte no Google Drive.`
+    : `Versão da gestão · contém remuneração e dados sensíveis, à mostra (sem senha) — NÃO publique nem compartilhe este arquivo. Documentos-fonte no Google Drive.`;
+  document.getElementById('foot').innerHTML=`Fonte: <b>${origem==='cifrado'?'dados criptografados':origem==='arquivo'?'dados_rh.json':'cópia embutida no HTML'}</b> · gerado em ${DADOS.meta.gerado_em} · ${DADOS.meta.escritorio}. `+rodape;
+  pintarFiltros();
+  render();
+}
+async function decifrar(code, enc){
+  const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(enc.salt),iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b(enc.iv)},key,b(enc.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+function mostrarLogin(enc){
+  const scr=document.getElementById('loginScreen');scr.style.display='flex';
+  const inp=document.getElementById('loginCode'),err=document.getElementById('loginErr'),btn=document.getElementById('loginBtn');
+  setTimeout(()=>inp.focus(),50);
+  if(!(window.crypto&&crypto.subtle)){err.textContent='Abra pelo link (https) — a criptografia não funciona em arquivo local.';return;}
+  const tentar=async()=>{
+    const code=inp.value.trim();if(!code){return;}
+    err.textContent='';btn.disabled=true;btn.textContent='Verificando…';
+    try{DADOS=await decifrar(code,enc);scr.style.display='none';iniciar('cifrado');}
+    catch(e){err.textContent='Código incorreto.';btn.disabled=false;btn.textContent='Entrar';inp.value='';inp.focus();}
+  };
+  btn.onclick=tentar;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')tentar();});
+}
+async function boot(){
+  let enc=null;try{enc=JSON.parse(document.getElementById('enc-data').textContent);}catch(e){}
+  if(PUBLICO&&enc){mostrarLogin(enc);return;}
+  const origem=await carregar();iniciar(origem);
+}
+boot();
+</script>
+</body>
+</html>
